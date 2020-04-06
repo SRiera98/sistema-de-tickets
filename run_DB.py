@@ -17,4 +17,3 @@ Session = sessionmaker(bind=engine)
 
 # Creamos la sesion, nos permite el manejo de la BD.
 session = Session()
-

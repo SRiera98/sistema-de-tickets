@@ -1,4 +1,7 @@
 import socket, sys
+from modelo import Ticket
+from run_DB import session
+
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("Socket Creado!")
@@ -7,7 +10,7 @@ except socket.error:
     sys.exit()
 
 host = "localhost"
-port = int(8050)
+port = int(8080)
 
 client_socket.connect((host, port))
 
@@ -28,8 +31,10 @@ while True:
     print("""\n
         \t\t\t *** Menu ***
         - INSERTAR TICKET (INSERTAR)
-        - LISTAR TICKET (LISTAR)
+        - LISTAR TICKETS (LISTAR)
         - SALIR (SALIR)
+        - EDITAR TICKETS (EDITAR) -NO IMPLEMENTADO
+        - FILTRAR TICKETS (FILTRAR) -NO IMPLEMENTADO
         """)
 
     opcion = input('Opcion: ').upper()
@@ -43,19 +48,17 @@ while True:
         client_socket.sendto(titulo.encode(), (host, port))
         descripcion = input("\nIngrese descripcion del ticket: ")
         client_socket.sendto(descripcion.encode(), (host, port))
-        estado = input("\nIngrese estado del ticket (pendiente, en procesamiento o resuelto):")
+        estado = input("\nIngrese estado del ticket (pendiente, en procesamiento o resuelto): ")
 
         while estado not in ("pendiente", "en procesamiento", "resuelto"):
-            estado=input("Estado debe ser uno de los pedidos, intentelo nuevamente")
+            estado=input("Estado debe ser uno de los pedidos, intentelo nuevamente): ")
         client_socket.sendto(estado.encode(), (host, port))
 
     elif (opcion == 'LISTAR'):
-        print(client_socket.recv(1024).decode())
-        while True:
-            msg = input()
-            client_socket.sendto(msg.encode(), (host, port))
-            if msg == 'quit':
-                break
+        lista_tickets=session.query(Ticket).filter(Ticket.estado=="pendiente")
+        print("Los Tickets actuales sin resolver son: ")
+        for ticket in lista_tickets:
+            print(f"Titulo: {ticket.titulo}\nAutor: {ticket.autor}\nFecha de Creacion: {ticket.fecha}\nDescripcion: {ticket.descripcion}\nEstado: {ticket.estado}\n\n")
 
     elif (opcion == 'SALIR'):
         break
@@ -63,17 +66,5 @@ while True:
     else:
         print('\nOpcion invalida!\n')
         input('Apretar Enter...')
-
-    """
-    if msg.decode() == 'exit':
-        break
-    else:
-        try :
-            #Set the whole string
-            client_socket.sendto(msg, (host, port))
-        except socket.error:
-            #Send failed
-            print ('Fallo al enviar el msg!')
-            sys.exit()"""
 
 client_socket.close()

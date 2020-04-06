@@ -4,7 +4,7 @@ from threading import Thread
 from run_DB import session
 from modelo import Ticket
 from datetime import datetime
-import pickle
+
 def thread_fuction(port,sock):
     while True:
         msg = clientsocket.recv(1024)
@@ -15,21 +15,14 @@ def thread_fuction(port,sock):
             titulo = sock.recv(1024).decode()
             descripcion=sock.recv(1024).decode()
             estado=sock.recv(1024).decode()
-            print(autor)
-            print(titulo)
-            print(descripcion)
-            print(estado)
-            print("\n\n")
             ticket=Ticket(autor=autor,titulo=titulo,descripcion=descripcion,estado=estado,fecha=datetime.now())
             session.add(ticket)
-            print("Despues del add")
             session.commit()
-            print("Despues del commit")
             break
         elif (msg.decode() == 'LISTAR'):
             pass
 
-        elif (msg.decode() == 'CERRAR'):
+        elif (msg.decode() == 'SALIR'):
             break
 
         else:
@@ -48,7 +41,7 @@ except socket.error:
 
 #Establecemos parametros
 host = "localhost"
-port = int(8050)
+port = int(8080)
 
 # Blindeamos el puerto y el host
 serversocket.bind((host, port))
