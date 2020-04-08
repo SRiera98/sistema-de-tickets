@@ -15,11 +15,15 @@ def thread_fuction(port,sock):
             titulo = sock.recv(1024).decode()
             descripcion=sock.recv(1024).decode()
             estado=sock.recv(1024).decode()
+            print(f"autor {autor} titulo {titulo} descripcion {descripcion} estado {estado}")
             ticket=Ticket(autor=autor,titulo=titulo,descripcion=descripcion,estado=estado,fecha=datetime.now())
             session.add(ticket)
             session.commit()
             break
         elif (msg.decode() == 'LISTAR'):
+            pass
+
+        elif (msg.decode() == 'FILTRAR'):
             pass
 
         elif (msg.decode() == 'SALIR'):
