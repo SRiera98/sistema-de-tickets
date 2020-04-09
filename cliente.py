@@ -2,7 +2,7 @@ import socket, sys
 from modelo import Ticket
 from run_DB import session
 from filtro import filtrar_autor, filtrar_estado, filtrar_fecha
-
+from validaciones import validar_estado
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("Socket Creado!")
@@ -11,10 +11,9 @@ except socket.error:
     sys.exit()
 
 host = "localhost"
-port = int(8080)
+port = int(8070)
 
 client_socket.connect((host, port))
-
 print ('Socket conectado al host', host, 'en el puerto', port)
 
 while True:
@@ -22,9 +21,9 @@ while True:
         \t\t\t *** Menu ***
         - INSERTAR TICKET (INSERTAR)
         - LISTAR TICKETS (LISTAR)
+        - EDITAR TICKETS (EDITAR)
+        - FILTRAR TICKETS (FILTRAR)
         - SALIR (SALIR)
-        - EDITAR TICKETS (EDITAR) -NO IMPLEMENTADO
-        - FILTRAR TICKETS (FILTRAR) -NO IMPLEMENTADO
         """)
 
     opcion = input('Opcion: ').upper()
@@ -38,13 +37,12 @@ while True:
         descripcion = input("\nIngrese descripcion del ticket: ")
         client_socket.sendto(descripcion.encode(), (host, port))
         estado = input("\nIngrese estado del ticket (pendiente, en procesamiento o resuelto): ")
-
-        while estado not in ("pendiente", "en procesamiento", "resuelto"):
+        while validar_estado(estado):
             estado=input("Estado debe ser uno de los pedidos, intentelo nuevamente): ")
         client_socket.sendto(estado.encode(), (host, port))
 
     elif (opcion == 'LISTAR'):
-        lista_tickets=session.query(Ticket).filter()
+        lista_tickets=session.query(Ticket).filter().all()
         print("Los Tickets actuales sin resolver son: ")
         for ticket in lista_tickets:
             print(f"Titulo: {ticket.titulo}\nAutor: {ticket.autor}\nFecha de Creacion: {ticket.fecha}\nDescripcion: {ticket.descripcion}\nEstado: {ticket.estado}\n\n")
@@ -83,6 +81,21 @@ while True:
             for ticket in lista_tickets:
                 print(f"Titulo: {ticket.titulo}\nAutor: {ticket.autor}\nFecha de Creacion: {ticket.fecha}\nDescripcion: {ticket.descripcion}\nEstado: {ticket.estado}\n\n")
 
+    elif (opcion == 'EDITAR'):
+        titulo_ticket = input("\nIngrese el titulo del Ticket a editar: ")
+        client_socket.sendto(titulo_ticket.encode(), (host, port))
+        # print(client_socket.recv(1024).decode()) VER como hacer que imprima solo si esta mal.
+        print(client_socket.recv(1024).decode())
+        edit_option=input("Opcion: ")
+        while edit_option not in ('1','2','3'):
+            edit_option = input("Opcion incorrecta, intentelo nuevamente: ")
+        client_socket.sendto(edit_option.encode(), (host, port))
+
+        nuevo_dato=input(client_socket.recv(1024).decode())
+        if edit_option == '2':
+            while validar_estado(nuevo_dato):
+                nuevo_dato = input("El estado es incorrecto, intentelo nuevamente: ")
+        client_socket.sendto(nuevo_dato.encode(), (host, port))
     elif (opcion == 'SALIR'):
         break
 

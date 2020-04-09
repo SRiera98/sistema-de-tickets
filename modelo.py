@@ -18,4 +18,4 @@ class Ticket(Base):
     estado=Column(String(20),nullable=False)
 
     def __repr(self):
-        return "utente: {0}, {1}, id: {2}".format(self.fecha,self.titulo,self.autor)
+        return "Ticket: {0}, {1}, {2} {3}".format(self.fecha,self.titulo,self.autor,self.descripcion)
