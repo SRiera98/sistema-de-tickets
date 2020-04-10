@@ -14,7 +14,7 @@ except socket.error:
     sys.exit()
 
 host = "localhost"
-port = int(8070)
+port = int(8080)
 
 client_socket.connect((host, port))
 print ('Socket conectado al host', host, 'en el puerto', port)
@@ -65,7 +65,7 @@ while True:
             else:
                 exit=True
 
-        lista_tickets=aplicar_filtro(filtros)
+        lista_tickets=aplicar_filtro(filtros,lista_tickets)
         mostrar_filtro(lista_tickets)
 
     elif (opcion == 'EDITAR'):
@@ -84,6 +84,7 @@ while True:
             while validar_estado(nuevo_dato):
                 nuevo_dato = input("El estado es incorrecto, intentelo nuevamente: ")
         client_socket.sendto(nuevo_dato.encode(), (host, port))
+
     elif (opcion == 'SALIR'):
         break
 

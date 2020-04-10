@@ -23,7 +23,7 @@ def filtrar_estado(lista_tickets):
     lista_tickets = lista_tickets.filter(Ticket.estado == estado)
     return lista_tickets
 
-def aplicar_filtro(filtros):
+def aplicar_filtro(filtros,lista_tickets):
     for filtro in filtros:
         if filtro == "autor":
             lista_tickets = filtrar_autor(lista_tickets)

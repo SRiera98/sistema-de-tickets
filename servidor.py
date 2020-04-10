@@ -1,20 +1,22 @@
 #!/usr/bin/python3
 import sys, socket, os
-from threading import Thread
+from threading import Thread,Semaphore
 from run_DB import session
 from modelo import Ticket
 from datetime import datetime
-from sqlalchemy import func as sql_fuctions
 from sqlalchemy.orm.exc import NoResultFound
 import json
 from validaciones import logger
-def thread_fuction(port,sock):
+from funciones_DB import guardar_ticket
+def thread_fuction(port,sock,semaf):
     while True:
         msg = clientsocket.recv(1024)
         print(f"Recibido  del puerto {port} atendido por PID {os.getpid()}:  {msg.decode()}")
         logger(sock,msg)
 
         if (msg.decode() == 'INSERTAR'):
+            semaforo.acquire()
+
             dict_data=sock.recv(1024).decode()
             final_data=json.loads(dict_data)
             final_data=dict(final_data)
@@ -28,9 +30,7 @@ def thread_fuction(port,sock):
                 elif key == "estado":
                     estado=value
             print(final_data)
-            ticket=Ticket(autor=autor,titulo=titulo,descripcion=descripcion,estado=estado,fecha=datetime.now())
-            session.add(ticket)
-            session.commit()
+            guardar_ticket(autor,titulo,descripcion,estado,fecha=datetime.now())
             break
         elif (msg.decode() == 'LISTAR'):
             pass
@@ -63,6 +63,8 @@ def thread_fuction(port,sock):
             session.add(ticket_editar)
             session.commit()
 
+
+
         elif (msg.decode() == 'FILTRAR'):
             pass
 
@@ -85,7 +87,7 @@ except socket.error:
 
 #Establecemos parametros
 host = "localhost"
-port = int(8070)
+port = int(8080)
 
 # Blindeamos el puerto y el host
 serversocket.bind((host, port))
@@ -94,9 +96,11 @@ serversocket.bind((host, port))
 serversocket.listen(5)
 if __name__ == "__main__":
     while True:
-        # establish a connection
+        # Establecemos el semaforo a utilizar
+        semaforo=Semaphore(value=1) #Inicializamos la variable semaforo en 1.
+        # Establecemos la conexion
         clientsocket, addr = serversocket.accept()
         print('Conexion establecida: SERVER ON')
-        conection=Thread(target=thread_fuction,args=(port,clientsocket))
+        conection=Thread(target=thread_fuction,args=(port,clientsocket,semaforo))
         conection.start()
 
