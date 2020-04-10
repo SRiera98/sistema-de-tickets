@@ -2,7 +2,10 @@ import socket, sys
 from modelo import Ticket
 from run_DB import session
 from filtro import filtrar_autor, filtrar_estado, filtrar_fecha
+from funciones_DB import listar_tickets
 from validaciones import validar_estado
+import json
+from filtro import aplicar_filtro,mostrar_filtro
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("Socket Creado!")
@@ -31,21 +34,16 @@ while True:
     client_socket.sendto(opcion.encode(), (host, port))
     if (opcion == 'INSERTAR'):
         autor = input("\nIngrese autor del Ticket: ")
-        client_socket.sendto(autor.encode(), (host, port))
         titulo = input("\nIngrese titulo del ticket: ")
-        client_socket.sendto(titulo.encode(), (host, port))
         descripcion = input("\nIngrese descripcion del ticket: ")
-        client_socket.sendto(descripcion.encode(), (host, port))
         estado = input("\nIngrese estado del ticket (pendiente, en procesamiento o resuelto): ")
         while validar_estado(estado):
             estado=input("Estado debe ser uno de los pedidos, intentelo nuevamente): ")
-        client_socket.sendto(estado.encode(), (host, port))
-
+        data={"autor":autor,"titulo":titulo,"descripcion":descripcion,"estado":estado}
+        json_data=json.dumps(data) #Convertimos el diccionario a JSON
+        client_socket.sendto(json_data.encode(),(host,port))
     elif (opcion == 'LISTAR'):
-        lista_tickets=session.query(Ticket).filter().all()
-        print("Los Tickets actuales sin resolver son: ")
-        for ticket in lista_tickets:
-            print(f"Titulo: {ticket.titulo}\nAutor: {ticket.autor}\nFecha de Creacion: {ticket.fecha}\nDescripcion: {ticket.descripcion}\nEstado: {ticket.estado}\n\n")
+        listar_tickets()
 
     elif (opcion == 'FILTRAR'):
         exit=False
@@ -67,22 +65,12 @@ while True:
             else:
                 exit=True
 
-        for filtro in filtros:
-            if filtro == "autor":
-                lista_tickets=filtrar_autor(lista_tickets)
-            if filtro == "estado":
-                lista_tickets=filtrar_estado(lista_tickets)
-            if filtro == "fecha":
-                lista_tickets=filtrar_fecha(lista_tickets)
-        if lista_tickets.count()==0:
-            print("No hay resultados para su busqueda!\n")
-        else:
-            print("Resultados de la busqueda: \n")
-            for ticket in lista_tickets:
-                print(f"Titulo: {ticket.titulo}\nAutor: {ticket.autor}\nFecha de Creacion: {ticket.fecha}\nDescripcion: {ticket.descripcion}\nEstado: {ticket.estado}\n\n")
+        lista_tickets=aplicar_filtro(filtros)
+        mostrar_filtro(lista_tickets)
 
     elif (opcion == 'EDITAR'):
-        titulo_ticket = input("\nIngrese el titulo del Ticket a editar: ")
+        listar_tickets()
+        titulo_ticket = input("\nIngrese el indentificador del Ticket a editar: ")
         client_socket.sendto(titulo_ticket.encode(), (host, port))
         # print(client_socket.recv(1024).decode()) VER como hacer que imprima solo si esta mal.
         print(client_socket.recv(1024).decode())

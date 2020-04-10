@@ -22,3 +22,20 @@ def filtrar_estado(lista_tickets):
         estado=input("Error al ingresar el estado, intentelo nuevamente: ")
     lista_tickets = lista_tickets.filter(Ticket.estado == estado)
     return lista_tickets
+
+def aplicar_filtro(filtros):
+    for filtro in filtros:
+        if filtro == "autor":
+            lista_tickets = filtrar_autor(lista_tickets)
+        if filtro == "estado":
+            lista_tickets = filtrar_estado(lista_tickets)
+        if filtro == "fecha":
+            lista_tickets = filtrar_fecha(lista_tickets)
+    return lista_tickets
+def mostrar_filtro(lista_tickets):
+    if lista_tickets.count() == 0:
+        print("No hay resultados para su busqueda!\n")
+    else:
+        print("Resultados de la busqueda: \n")
+        for ticket in lista_tickets:
+            print(f"Titulo: {ticket.titulo}\nAutor: {ticket.autor}\nFecha de Creacion: {ticket.fecha}\nDescripcion: {ticket.descripcion}\nEstado: {ticket.estado}\n\n")

@@ -6,17 +6,28 @@ from modelo import Ticket
 from datetime import datetime
 from sqlalchemy import func as sql_fuctions
 from sqlalchemy.orm.exc import NoResultFound
+import json
+from validaciones import logger
 def thread_fuction(port,sock):
     while True:
         msg = clientsocket.recv(1024)
         print(f"Recibido  del puerto {port} atendido por PID {os.getpid()}:  {msg.decode()}")
+        logger(sock,msg)
 
         if (msg.decode() == 'INSERTAR'):
-            autor = sock.recv(1024).decode()
-            titulo = sock.recv(1024).decode()
-            descripcion=sock.recv(1024).decode()
-            estado=sock.recv(1024).decode()
-            print(f"autor {autor} titulo {titulo} descripcion {descripcion} estado {estado}")
+            dict_data=sock.recv(1024).decode()
+            final_data=json.loads(dict_data)
+            final_data=dict(final_data)
+            for key,value in final_data.items():
+                if key == "autor":
+                    autor=value
+                elif key == "titulo":
+                    titulo=value
+                elif key == "descripcion":
+                    descripcion=value
+                elif key == "estado":
+                    estado=value
+            print(final_data)
             ticket=Ticket(autor=autor,titulo=titulo,descripcion=descripcion,estado=estado,fecha=datetime.now())
             session.add(ticket)
             session.commit()
@@ -25,9 +36,9 @@ def thread_fuction(port,sock):
             pass
 
         elif (msg.decode() == 'EDITAR'):
-            titulo_ticket=sock.recv(1024).decode()
+            identificador_ticket=sock.recv(1024).decode()
             try:
-                ticket_editar=session.query(Ticket).filter(sql_fuctions.lower(Ticket.titulo)==sql_fuctions.lower(titulo_ticket)).one()
+                ticket_editar=session.query(Ticket).filter(Ticket.ticketId==identificador_ticket).one()
             except NoResultFound:
                 sock.sendto("Ticket no encontrado".encode(), (host, port))
                 print("Ticket no encontrado.")
@@ -41,20 +52,16 @@ def thread_fuction(port,sock):
                 sock.sendto("Ingrese el nuevo titulo a colocar: ".encode(), (host, port))
                 nuevo_titulo=sock.recv(1024).decode()
                 ticket_editar.titulo=nuevo_titulo
-                session.add(ticket_editar)
-                session.commit()
             elif int(edit_option) == 2:
                 sock.sendto("Ingrese el nuevo estado a colocar: ".encode(), (host, port))
                 nuevo_estado = sock.recv(1024).decode()
                 ticket_editar.estado = nuevo_estado
-                session.add(ticket_editar)
-                session.commit()
             elif int(edit_option) == 3:
                 sock.sendto("Ingrese la nueva descripcion a colocar: ".encode(), (host, port))
                 nueva_descripcion = sock.recv(1024).decode()
                 ticket_editar.descripcion = nueva_descripcion
-                session.add(ticket_editar)
-                session.commit()
+            session.add(ticket_editar)
+            session.commit()
 
         elif (msg.decode() == 'FILTRAR'):
             pass
@@ -85,11 +92,11 @@ serversocket.bind((host, port))
 
 # Establecemos 5 peticiones de escucha como maximo.
 serversocket.listen(5)
-
-while True:
-    # establish a connection
-    clientsocket, addr = serversocket.accept()
-    print('Conexion establecida: SERVER ON')
-    conection=Thread(target=thread_fuction,args=(port,clientsocket))
-    conection.start()
+if __name__ == "__main__":
+    while True:
+        # establish a connection
+        clientsocket, addr = serversocket.accept()
+        print('Conexion establecida: SERVER ON')
+        conection=Thread(target=thread_fuction,args=(port,clientsocket))
+        conection.start()
 
