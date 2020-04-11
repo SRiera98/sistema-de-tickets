@@ -2,7 +2,25 @@ from datetime import datetime
 from modelo import Ticket
 from validaciones import validar_fecha
 
-
+def mostrar_menu_filtro():
+    exit = False
+    entry = 0
+    filtros = list()
+    test = "yes"
+    while not exit and entry < 3:
+        filtro = input("Ingrese el tipo de filtro por el que desea comenzar (fecha, autor o estado):").lower()
+        while filtro not in ("fecha", "autor", "estado"):
+            filtro = input("Filtro incorrecto, intentelo nuevamente: ")
+        filtros.append(filtro)
+        if entry < 2 and test == "yes":
+            test = input("¿Desea añadir otro filtro? (yes/no): ")
+            entry += 1
+            exit = False
+            if test == "no":
+                exit = True
+        else:
+            exit = True
+    return filtros
 def filtrar_fecha(lista_tickets):
     fecha=input("Ingrese la fecha por la que desea buscar (formato DD-MM-YYYY): ")
     while validar_fecha(fecha):

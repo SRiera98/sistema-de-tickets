@@ -1,7 +1,9 @@
 import socket, sys
+
+from funciones_generales import csv_manager, procesamiento_csv
 from modelo import Ticket
 from run_DB import session
-from filtro import filtrar_autor, filtrar_estado, filtrar_fecha
+from filtro import filtrar_autor, filtrar_estado, filtrar_fecha, mostrar_menu_filtro
 from funciones_DB import listar_tickets
 from validaciones import validar_estado
 import json
@@ -26,6 +28,7 @@ while True:
         - LISTAR TICKETS (LISTAR)
         - EDITAR TICKETS (EDITAR)
         - FILTRAR TICKETS (FILTRAR)
+        - EXPORTAR LISTA DE TICKETS (EXPORTAR)
         - SALIR (SALIR)
         """)
 
@@ -42,29 +45,14 @@ while True:
         data={"autor":autor,"titulo":titulo,"descripcion":descripcion,"estado":estado}
         json_data=json.dumps(data) #Convertimos el diccionario a JSON
         client_socket.sendto(json_data.encode(),(host,port))
+
     elif (opcion == 'LISTAR'):
         listar_tickets()
 
     elif (opcion == 'FILTRAR'):
-        exit=False
-        entry=0
-        lista_tickets=session.query(Ticket).filter()
-        filtros = list()
-        test="yes"
-        while not exit and entry<3:
-            filtro=input("Ingrese el tipo de filtro por el que desea comenzar (fecha, autor o estado):").lower()
-            while filtro not in ("fecha","autor","estado"):
-                filtro=input("Filtro incorrecto, intentelo nuevamente: ")
-            filtros.append(filtro)
-            if entry<2 and test == "yes":
-                test=input("¿Desea añadir otro filtro? (yes/no): ")
-                entry += 1
-                exit=False
-                if test == "no":
-                    exit=True
-            else:
-                exit=True
 
+        lista_tickets=session.query(Ticket).filter()
+        filtros=mostrar_menu_filtro()
         lista_tickets=aplicar_filtro(filtros,lista_tickets)
         mostrar_filtro(lista_tickets)
 
@@ -84,6 +72,17 @@ while True:
             while validar_estado(nuevo_dato):
                 nuevo_dato = input("El estado es incorrecto, intentelo nuevamente: ")
         client_socket.sendto(nuevo_dato.encode(), (host, port))
+    elif (opcion == "EXPORTAR"):
+        lista_tickets = session.query(Ticket).filter()
+        eleccion=input("¿Desea exportar una lista completa o una filtrada? (completa/filtrada): ").lower()
+        while eleccion not in ("completa","filtrada"):
+            eleccion = input("Su eleccion es incorrecta, recuerde elegir entre: (completa/filtrada) ")
+        if eleccion == "completa":
+            procesamiento_csv(lista_tickets)
+        else:
+            filtros = mostrar_menu_filtro()
+            lista_tickets = aplicar_filtro(filtros, lista_tickets)
+            procesamiento_csv(lista_tickets)
 
     elif (opcion == 'SALIR'):
         break

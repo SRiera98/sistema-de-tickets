@@ -15,20 +15,26 @@ def thread_fuction(port,sock,semaf):
         logger(sock,msg)
 
         if (msg.decode() == 'INSERTAR'):
-            semaforo.acquire()
 
             dict_data=sock.recv(1024).decode()
+            print("dict_data con decode hecho: "+str(dict_data))
             final_data=json.loads(dict_data)
+            print("final data antes de ser diccionario: "+str(final_data))
             final_data=dict(final_data)
+            print("final data despues de ser diccionario: "+str(final_data))
             for key,value in final_data.items():
                 if key == "autor":
                     autor=value
+                    print("autor:"+value)
                 elif key == "titulo":
                     titulo=value
+                    print("titulo:" + value)
                 elif key == "descripcion":
                     descripcion=value
+                    print("descripcion:" + value)
                 elif key == "estado":
                     estado=value
+                    print("estado: "+value)
             print(final_data)
             guardar_ticket(autor,titulo,descripcion,estado,fecha=datetime.now())
             break
@@ -67,7 +73,8 @@ def thread_fuction(port,sock,semaf):
 
         elif (msg.decode() == 'FILTRAR'):
             pass
-
+        elif (msg.decode() == 'EXPORTAR'):
+            pass
         elif (msg.decode() == 'SALIR'):
             break
 
