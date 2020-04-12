@@ -1,5 +1,4 @@
 import socket, sys
-
 from funciones_generales import csv_manager, procesamiento_csv
 from modelo import Ticket
 from run_DB import session
@@ -8,6 +7,7 @@ from funciones_DB import listar_tickets
 from validaciones import validar_estado
 import json
 from filtro import aplicar_filtro,mostrar_filtro
+
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("Socket Creado!")
@@ -16,9 +16,10 @@ except socket.error:
     sys.exit()
 
 host = "localhost"
-port = int(8080)
+port = int(8070)
 
 client_socket.connect((host, port))
+#client_socket.setblocking(False)
 print ('Socket conectado al host', host, 'en el puerto', port)
 
 while True:
@@ -33,7 +34,6 @@ while True:
         """)
 
     opcion = input('Opcion: ').upper()
-
     client_socket.sendto(opcion.encode(), (host, port))
     if (opcion == 'INSERTAR'):
         autor = input("\nIngrese autor del Ticket: ")
@@ -45,7 +45,6 @@ while True:
         data={"autor":autor,"titulo":titulo,"descripcion":descripcion,"estado":estado}
         json_data=json.dumps(data) #Convertimos el diccionario a JSON
         client_socket.sendto(json_data.encode(),(host,port))
-
     elif (opcion == 'LISTAR'):
         listar_tickets()
 
@@ -86,7 +85,6 @@ while True:
 
     elif (opcion == 'SALIR'):
         break
-
     else:
         print('\nOpcion invalida!\n')
         input('Apretar Enter...')
