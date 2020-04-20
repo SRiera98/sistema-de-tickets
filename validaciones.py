@@ -1,4 +1,8 @@
 from datetime import datetime
+from sqlalchemy.orm.exc import NoResultFound
+from modelo import Ticket
+from run_DB import session
+
 
 def validar_fecha(fecha):
     try:
@@ -14,6 +18,15 @@ def validar_estado(estado):
     else:
         retorno=False
     return retorno
+
+def validar_ticket(id_ticket):
+    try:
+        session.query(Ticket).filter(Ticket.ticketId == id_ticket).one()
+        retorno=False
+    except NoResultFound:
+        retorno=True
+    return retorno
+
 
 def logger(sock,msg):
     with open("log", "a+") as file:

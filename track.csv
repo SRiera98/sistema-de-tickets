@@ -1,0 +1,44 @@
+ticketId,fecha,titulo,autor,descripcion,estado
+1,2020-04-05 17:30:49,Fork bomb,Jose,descripcion probando neiegoa,resuelto
+2,2020-04-05 20:30:39,cel brickeado mal men,Santiago,el cel se rompio por instalar gcam,en procesamiento
+3,2020-04-06 11:28:03,PC Rota,Nico,"se rompio el linux SO Selector, reinstalar windows, arreglar todo",resuelto
+4,2020-04-08 09:35:57,cambio de placa madre,Mauricio,debe comprar otra placa y hacer el cambio,resuelto
+5,2020-04-08 09:44:00,PC reinstalar SO,Mauricio,instalar Ubuntu,en procesamiento
+6,2020-04-09 18:49:03,Mantenimiento servidor,Marcos,se debera ejecutar los scripts de control,pendiente
+7,2020-04-09 18:57:02,RAID,Rumberto,se establecera RAID 7,en procesamiento
+8,2020-04-09 19:20:20,Celular roto,Jose,pantalla rota,pendiente
+9,2020-04-09 19:24:50,cel roto,Jose,pantalla rota,en procesamiento
+10,2020-04-09 19:30:56,servidor falta linux ,Lucas,oawld falta,en procesamiento
+11,2020-04-09 20:16:21,pc rota,Nico,reinstalar linux,pendiente
+12,2020-04-10 09:45:46,Flex roto,Marcos,Arreglar flex notebook,en procesamiento
+13,2020-04-10 09:50:58,Servidor anda re re mal,Rodrigo,Reemplazar disco del RAID,en procesamiento
+14,2020-04-10 11:42:20,Mouse Falla,Alberto,falla tras muchas horas de uso,pendiente
+15,2020-04-10 17:32:26,Red falla,Manuel,reemplazar cable de red,pendiente
+16,2020-04-11 12:40:45,Mouse roto,Clemente,no funciona la rueda,pendiente
+17,2020-04-11 12:46:28,PC bien rota,Marcos,mother rota,pendiente
+18,2020-04-11 16:55:10,brick instancia virtual servidor,Rosario,instalar nuevamente,en procesamiento
+19,2020-04-11 17:02:48,"PC Rota, software",Roberto,instalar windows server,pendiente
+20,2020-04-11 17:05:37,Realizar tutoriales Zoom,Rogelio,faltan tutoriales,pendiente
+21,2020-04-11 17:21:38,RAID dañado,Maria Fernandez,reemplazar disco,pendiente
+22,2020-04-11 17:28:19,pc SonicMAster no anda sonido,Lopardo,arreglar sonido,en procesamiento
+23,2020-04-11 18:06:59,Notebook falla,Rodrigo,"esta notebook esta, muy, pero que muy, rota, xd, xd, xd.",pendiente
+24,2020-04-12 09:50:38,TV 32K,Rolando,"Se rompio la pantalla, quedamos en bancarrota xd",pendiente
+25,2020-04-12 10:27:58,PC Rota,Rogelio,"RAM dañada, reparar",en procesamiento
+26,2020-04-12 10:52:17,Servidor dañado,Marcelo,hardware roto,pendiente
+27,2020-04-12 11:12:14,UPS Roto,Manolo,arreglar,en procesamiento
+28,2020-04-12 11:15:23,Falla de software,Manuel,reinstalar Network coder,pendiente
+29,2020-04-12 11:22:25,Falla #12210,Josefina,urgente,pendiente
+30,2020-04-12 12:20:48,PC rota,Santiago,mouse,pendiente
+31,2020-04-12 17:24:43,Pad roto,Marcos,arreglar Mouse pad notebook,pendiente
+32,2020-04-12 17:24:50,cel roto,Jose,arreglar pendrive,en procesamiento
+33,2020-04-12 17:27:55,Falta linux pc 91,Sofia,instalar,pendiente
+34,2020-04-12 17:28:05,PC rota,Rosario,"hardware roto, falla teclado",en procesamiento
+35,2020-04-12 17:32:10,Arreglar posibilidad home office,Alvaro,necesito el software necesario,pendiente
+36,2020-04-12 18:07:09,UPS Roto,Roberto,arreglar UPS,pendiente
+37,2020-04-12 18:18:10,arreglar servidor,Jose,contratar mas cpu AWS,pendiente
+38,2020-04-12 18:18:10,Falta windows server,Yama,PC 13,en procesamiento
+39,2020-04-12 18:25:46,PC rota,Jose,disco roto,pendiente
+40,2020-04-12 18:33:26,PC Rota,Jose,disco roto,pendiente
+41,2020-04-12 18:33:56,servidor roto,Manuel,comprar en AWS,en procesamiento
+42,2020-04-12 18:37:11,Redmi Note 5,Roberto,SALIR,pendiente
+43,2020-04-12 18:37:11,cel roto mal,Gloria,pendiente,resuelto

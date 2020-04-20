@@ -9,6 +9,7 @@ from multiprocessing import Process
 
 from modelo import Ticket
 from run_DB import session
+from validaciones import validar_ticket
 
 
 def csv_manager(lista_tickets):
@@ -25,7 +26,7 @@ def csv_compress(filename):
     directorio="CSV_Tickets"
     if not os.path.exists(directorio):
         os.mkdir(directorio)
-    nombre_zip=secure_filename("csv ticket - fecha: "+str(datetime.now()))
+    nombre_zip=secure_filename("csv ticket - fecha: "+str(datetime.now().strftime("%d-%m-%Y_%H.%M.%S")))
     with ZipFile("CSV_Tickets/"+nombre_zip+".zip", 'w') as zip:
         zip.write(filename)
 
@@ -34,11 +35,9 @@ def procesamiento_csv(tickets):
     proceso.start()
 
 def menu_edicion(sock,host,port,identificador_ticket):
-    try:
-        ticket_editar = session.query(Ticket).filter(Ticket.ticketId == identificador_ticket).one()
-    except NoResultFound:
-        sock.sendto("Ticket no encontrado".encode(), (host, port))
-        print("Ticket no encontrado.")
+
+    ticket_editar = session.query(Ticket).filter(Ticket.ticketId == identificador_ticket).one()
+
     sock.sendto("\t\t¿Que desea editar?\n\t"
                 "1. Editar titulo\n\t"
                 "2. Editar estado\n\t"
