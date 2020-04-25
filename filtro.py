@@ -1,3 +1,6 @@
+import os
+import sys
+from sqlalchemy import func as sql_recursos
 from datetime import datetime
 from modelo import Ticket
 from validaciones import validar_fecha
@@ -21,34 +24,37 @@ def mostrar_menu_filtro():
         else:
             exit = True
     return filtros
-def filtrar_fecha(lista_tickets):
-    fecha=input("Ingrese la fecha por la que desea buscar (formato DD-MM-YYYY): ")
-    while validar_fecha(fecha):
-        fecha = input("Formato de fecha incorrecto, intentelo nuevamente: ")
-    fecha = datetime.strptime(fecha, "%d-%m-%Y").date()
+def filtrar_fecha(lista_tickets,fecha):
+    #fecha=input("Ingrese la fecha por la que desea buscar (formato DD-MM-YYYY): ")
+    if validar_fecha(fecha) is False:
+        fecha = datetime.strptime(fecha, "%d-%m-%Y").date()
+    else:
+        print("Formato de fecha incorrecto, ejecute correctamente el comando: ")
     lista_tickets = lista_tickets.filter(Ticket.fecha.like(str(fecha) + "%"))
     return lista_tickets
 
-def filtrar_autor(lista_tickets):
-    autor=input("Ingrese el autor por el que desea filtrar: ")
-    lista_tickets=lista_tickets.filter(Ticket.autor==autor)
+def filtrar_autor(lista_tickets,autor):
+    #autor=input("Ingrese el autor por el que desea filtrar: ")
+    lista_tickets=lista_tickets.filter(sql_recursos.lower(Ticket.autor)==sql_recursos.lower(autor))
     return lista_tickets
 
-def filtrar_estado(lista_tickets):
-    estado = input("Ingrese el estado por el que desea filtrar: ")
-    while estado not in ("pendiente", "en procesamiento", "resuelto"):
-        estado=input("Error al ingresar el estado, intentelo nuevamente: ")
-    lista_tickets = lista_tickets.filter(Ticket.estado == estado)
+def filtrar_estado(lista_tickets,estado):
+    #estado = input("Ingrese el estado por el que desea filtrar: ")
+    if estado not in ("pendiente", "en procesamiento", "resuelto"):
+        print("Error en el estado ingresado, ejecute nuevamente\n")
+    else:
+        lista_tickets = lista_tickets.filter(Ticket.estado == estado)
     return lista_tickets
 
 def aplicar_filtro(filtros,lista_tickets):
-    for filtro in filtros:
-        if filtro == "autor":
-            lista_tickets = filtrar_autor(lista_tickets)
-        if filtro == "estado":
-            lista_tickets = filtrar_estado(lista_tickets)
-        if filtro == "fecha":
-            lista_tickets = filtrar_fecha(lista_tickets)
+    for clave,valor in filtros.items():
+        if clave in ('--autor', '-a'):
+            lista_tickets = filtrar_autor(lista_tickets,valor)
+        if clave in ('--estado', '-d'):
+            print(f"ESTOY EN ESTADO {clave} {valor}")
+            lista_tickets = filtrar_estado(lista_tickets,valor)
+        if clave in ('--fecha', '-f'):
+            lista_tickets = filtrar_fecha(lista_tickets,valor)
     return lista_tickets
 def mostrar_filtro(lista_tickets):
     if lista_tickets.count() == 0:
@@ -56,4 +62,4 @@ def mostrar_filtro(lista_tickets):
     else:
         print("Resultados de la busqueda: \n")
         for ticket in lista_tickets:
-            print(f"Titulo: {ticket.titulo}\nAutor: {ticket.autor}\nFecha de Creacion: {ticket.fecha}\nDescripcion: {ticket.descripcion}\nEstado: {ticket.estado}\n\n")
+            print(f"Titulo: {ticket.titulo}\tAutor: {ticket.autor}\tFecha de Creacion: {ticket.fecha}\tDescripcion: {ticket.descripcion}\tEstado: {ticket.estado}\n")

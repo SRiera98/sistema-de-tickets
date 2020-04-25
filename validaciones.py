@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm.exc import NoResultFound
 from modelo import Ticket
 from run_DB import session
-
+from os import system
 
 def validar_fecha(fecha):
     try:
@@ -27,9 +27,21 @@ def validar_ticket(id_ticket):
         retorno=True
     return retorno
 
+def validar_numero(numero):
+    retorno=None
+    try:
+        if isinstance(int(numero), int):
+            retorno=True
+    except ValueError:
+        print("Has ingresado una letra!")
+        retorno=False
+    return retorno
 
 def logger(sock,msg):
     with open("log", "a+") as file:
         ip, port = sock.getpeername()
         fecha = datetime.now().strftime("%d-%m-%Y %H h:%M min:%S seg")
         file.write(f"Dirección IP Cliente: {ip} - Fecha: {fecha} - Operacion ejecutada: {msg.decode()}\n")
+
+def clear_screen():
+    system('clear')
