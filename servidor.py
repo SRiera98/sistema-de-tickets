@@ -1,17 +1,16 @@
 #!/usr/bin/python3
-from multiprocessing import Lock, RLock
-import sys, socket, os
-from threading import Thread, BoundedSemaphore
-import threading
-from funciones_generales import menu_edicion
-from run_DB import session
-from modelo import Ticket
-from datetime import datetime
-from sqlalchemy.orm.exc import NoResultFound
 import json
-from validaciones import logger
+import os
+from getopt import getopt,GetoptError
+import socket
+import sys
+from datetime import datetime
+from multiprocessing import Lock
+from threading import Thread, BoundedSemaphore
+
 from funciones_DB import guardar_ticket
-import time
+from funciones_generales import menu_edicion
+from validaciones import logger, validar_numero
 
 
 def thread_fuction(port, sock, lista_clientes, i, semaforo):
@@ -62,7 +61,7 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
                     else:
                         menu_edicion(sock,host,port,identificador_ticket)
             
-            
+               
             if len(lista_ids_edicion) == 1:
                 semaforo.acquire()
                 menu_edicion(sock, host, port, identificador_ticket)
@@ -85,7 +84,7 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
         elif (msg.decode() == 'EXPORTAR'):
             sock.sendto("\n¡Tickets exportados con exito!\n".encode(), (host, port))
             pass
-        elif (msg.decode() == 'SALIR'):
+        elif (msg.decode() == "SALIR"):
             for ip, puerto in lista_clientes:
                 ip_actual, puerto_actual = sock.getpeername()
                 if puerto_actual == puerto:
@@ -97,24 +96,36 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
         if not msg or msg in {"", " ", None}:
             break
 
-
-# creamos el objeto socket
-try:
-    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-except socket.error:
-    print('Fallo al crear el socket!')
-    sys.exit()
-
-# Establecemos parametros
-host = "localhost"
-port = int(8070)
-
-# Blindeamos el puerto y el host
-serversocket.bind((host, port))
-
-# Establecemos 5 peticiones de escucha como maximo.
-serversocket.listen(5)
 if __name__ == "__main__":
+    # creamos el objeto socket
+    try:
+        (opt, arg) = getopt(sys.argv[1:], 'p:',["puerto="])
+        for opcion,valor in opt:
+            if opcion in ("-p","--puerto") and validar_numero(valor) is True:
+                port=int(valor)
+    except GetoptError as e:
+        print("La estructura de comando es incorrecta.")
+        sys.exit(1)
+
+    try:
+        serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    except socket.error:
+        print('Fallo al crear el socket!')
+        sys.exit(1)
+
+
+    # Establecemos parametros
+    host = "localhost"
+
+    # Blindeamos el puerto y el host
+    try:
+        serversocket.bind((host, port))
+    except NameError:
+        print("Nunca se especifico el puerto!")
+        sys.exit(1)
+    # Establecemos 5 peticiones de escucha como maximo.
+    serversocket.listen(5)
+
     lista_clientes = list()  # Lista que tiene los clientes actuales.
     lista_ids_edicion = list()
     lock = Lock()

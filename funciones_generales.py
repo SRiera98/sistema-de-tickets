@@ -134,3 +134,17 @@ def validar_comando(cadena):
 
     print(f"EL RETORNO ES {retorno}")
     return retorno
+def control_ejecucion():
+    host=None
+    port=None
+    try:
+        (opt, arg) = getopt.getopt(sys.argv[1:], 'h:p:', ["host=","puerto="])
+        for opcion, valor in opt:
+            if opcion in ("-p", "--puerto") and validar_numero(valor) is True:
+                port = int(valor)
+            if opcion in ("-h","--host") and validar_numero(valor) is False:
+                host=valor
+    except getopt.GetoptError as e:
+        print("¡Debe especificar el host y puerto!")
+        sys.exit(1)
+    return (host,port)
