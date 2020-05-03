@@ -1,13 +1,17 @@
 import json
 import socket
 import sys
+import time
+
+import jsonpickle
+
 from filtro import aplicar_filtro, mostrar_filtro
 from funciones_DB import listar_tickets
 from funciones_generales import procesamiento_csv, validar_comando, control_ejecucion
 from modelo import Ticket
 from run_DB import session
 from validaciones import validar_estado, clear_screen, validar_numero
-
+import pickle
 if __name__ == "__main__":
 
     host, port = control_ejecucion()
@@ -50,7 +54,13 @@ if __name__ == "__main__":
             client_socket.sendto(json_data.encode(), (host, port))
             print(client_socket.recv(1024).decode())  # Mensaje de feedback satisfactorio.
         elif (opcion == 'LISTAR' and test is True):
-            listar_tickets()
+            longitud=client_socket.recv(1024).decode()
+            tickets=client_socket.recv(int(longitud))
+            dict_tickets=json.loads(tickets.decode())
+            for k,v in dict_tickets.items():
+                for key,value in v.items():
+                    print(f"{key}: {value}\t")
+                print("\n")
             mensaje_exito = client_socket.recv(1024).decode()
             print(mensaje_exito)
 

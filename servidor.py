@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import json
+import jsonpickle
 import os
 from getopt import getopt,GetoptError
 import socket
@@ -7,9 +8,10 @@ import sys
 from datetime import datetime
 from multiprocessing import Lock
 from threading import Thread, BoundedSemaphore
-
-from funciones_DB import guardar_ticket
+import pickle
+from funciones_DB import guardar_ticket, listar_tickets
 from funciones_generales import menu_edicion
+from modelo import MyEncoder
 from validaciones import logger, validar_numero
 
 
@@ -43,6 +45,13 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
             # if not puerto_actual==puerto:
             # sock.sendto(f"El cliente de Puerto {puerto_actual} agrego un ticket!".encode(), (host, puerto))
         elif (msg.decode() == 'LISTAR'):
+            lista=listar_tickets()
+            lista_dict=dict()
+            for i in lista:
+                lista_dict[i.ticketId]=i
+            datos=json.dumps(lista_dict,cls=MyEncoder)
+            sock.sendto(str(len(datos)).encode(),(host,port)) #Enviamos longitud de diccionario a cliente
+            sock.sendto(datos.encode(),(host,port)) #Enviamos  diccionario JSON
             sock.sendto("\n¡Comando OK!\n".encode(),(host,port))
 
         elif (msg.decode() == 'EDITAR'):
