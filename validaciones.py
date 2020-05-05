@@ -25,9 +25,9 @@ def validar_estado(estado):
 def validar_ticket(id_ticket):
     try:
         session.query(Ticket).filter(Ticket.ticketId == id_ticket).one()
-        retorno = False
-    except NoResultFound:
         retorno = True
+    except NoResultFound:
+        retorno = False
     return retorno
 
 

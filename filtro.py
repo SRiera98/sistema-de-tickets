@@ -51,15 +51,9 @@ def aplicar_filtro(filtros,lista_tickets):
         if clave in ('--autor', '-a'):
             lista_tickets = filtrar_autor(lista_tickets,valor)
         if clave in ('--estado', '-d'):
-            print(f"ESTOY EN ESTADO {clave} {valor}")
             lista_tickets = filtrar_estado(lista_tickets,valor)
         if clave in ('--fecha', '-f'):
             lista_tickets = filtrar_fecha(lista_tickets,valor)
     return lista_tickets
-def mostrar_filtro(lista_tickets):
-    if lista_tickets.count() == 0:
-        print("No hay resultados para su busqueda!\n")
-    else:
-        print("Resultados de la busqueda: \n")
-        for ticket in lista_tickets:
-            print(f"Titulo: {ticket.titulo}\tAutor: {ticket.autor}\tFecha de Creacion: {ticket.fecha}\tDescripcion: {ticket.descripcion}\tEstado: {ticket.estado}\n")
+
+

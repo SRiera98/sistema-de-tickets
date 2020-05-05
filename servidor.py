@@ -1,17 +1,18 @@
 #!/usr/bin/python3
 import json
-import jsonpickle
 import os
-from getopt import getopt,GetoptError
 import socket
 import sys
 from datetime import datetime
+from getopt import getopt, GetoptError
 from multiprocessing import Lock
 from threading import Thread, BoundedSemaphore
-import pickle
+
+from filtro import aplicar_filtro
 from funciones_DB import guardar_ticket, listar_tickets
-from funciones_generales import menu_edicion
-from modelo import MyEncoder
+from funciones_generales import menu_edicion, procesamiento_csv
+from modelo import MyEncoder, Ticket
+from run_DB import session
 from validaciones import logger, validar_numero
 
 
@@ -59,7 +60,7 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
             identificador_ticket = sock.recv(4024).decode() #Recibo ID del cliente.
             lista_ids_edicion.append(identificador_ticket)
             print(f"Lista actual: {lista_ids_edicion.count(identificador_ticket)}\n\n")
-            menu_edicion(sock, host, port, identificador_ticket)
+            menu_edicion(sock, host, port, int(identificador_ticket))
             """
             for i in range(len(lista_ids_edicion)):
                 for j in range(len(lista_ids_edicion)-1):
@@ -87,10 +88,29 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
                     # https://docs.python.org/2.0/lib/condition-objects.html
                 """
         elif (msg.decode() == 'FILTRAR'):
+            lista_tickets = session.query(Ticket).filter()
+            filtros=sock.recv(1024).decode()
+            filtros_dict=json.loads(filtros)
+            lista_tickets = aplicar_filtro(filtros_dict, lista_tickets)
+            lista_dict = dict()
+            for i in lista_tickets:
+                lista_dict[i.ticketId] = i
+            datos = json.dumps(lista_dict, cls=MyEncoder)
+            print(json.loads(datos))
+            sock.sendto(str(len(datos)).encode(), (host, port))  # Enviamos longitud de diccionario a cliente
+            sock.sendto(datos.encode(), (host, port))  # Enviamos  diccionario JSON
+
             sock.sendto("\n¡Comando OK!\n".encode(), (host, port))
         elif (msg.decode() == "LIMPIAR"):
             pass
         elif (msg.decode() == 'EXPORTAR'):
+            test=json.loads(sock.recv(1024).decode()) #Recivimos filtros o boolean lista completa.
+            lista_tickets = session.query(Ticket).filter()
+            if test is True:
+                procesamiento_csv(lista_tickets)
+            else:
+                lista_tickets = aplicar_filtro(test, lista_tickets)
+                procesamiento_csv(lista_tickets)
             sock.sendto("\n¡Tickets exportados con exito!\n".encode(), (host, port))
             pass
         elif (msg.decode() == "SALIR"):

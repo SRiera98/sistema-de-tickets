@@ -1,17 +1,10 @@
 import json
 import socket
 import sys
-import time
 
-import jsonpickle
+from funciones_generales import validar_comando, control_ejecucion, control_longitud_filtro
+from validaciones import validar_estado, clear_screen
 
-from filtro import aplicar_filtro, mostrar_filtro
-from funciones_DB import listar_tickets
-from funciones_generales import procesamiento_csv, validar_comando, control_ejecucion
-from modelo import Ticket
-from run_DB import session
-from validaciones import validar_estado, clear_screen, validar_numero
-import pickle
 if __name__ == "__main__":
 
     host, port = control_ejecucion()
@@ -33,7 +26,7 @@ if __name__ == "__main__":
 
     print('Socket conectado al host', host, 'en el puerto', port)
     print(
-        "\t\t\tComandos Disponibles\n\t--insertar/-i\n\t--listar/-l\n\t--editar/-e nro_ticket\n\tUtilizar:\n\t\t\t-a nombre_autor\n\t\t\t-d estado\n\t\t\t-f fecha(DD-MM-YYYY)\n\tAgregandolo a listar (para filtrar) o a exportar\n\t--clear/-c\n\t--salir/-s\n")
+        "\t\t\tComandos Disponibles\n\t--insertar/-i\n\t--listar/-l\n\t--editar/-e nro_ticket\n\t--exportar/-x\n\tUtilizar:\n\t\t\t-a nombre_autor\n\t\t\t-d estado\n\t\t\t-f fecha(DD-MM-YYYY)\n\tAgregandolo a listar (para filtrar) o a exportar\n\t--clear/-c\n\t--salir/-s\n")
     while True:
 
         entrada = input('>>> ')
@@ -65,9 +58,25 @@ if __name__ == "__main__":
             print(mensaje_exito)
 
         elif (opcion == 'FILTRAR' and test is not None):
-            lista_tickets = session.query(Ticket).filter()
-            lista_tickets = aplicar_filtro(test, lista_tickets)
-            mostrar_filtro(lista_tickets)
+
+            client_socket.sendto(json.dumps(test).encode(),(host,port))
+
+            longitud = client_socket.recv(5).decode()
+            longitud_int=control_longitud_filtro(longitud)
+
+            dict_filtro=client_socket.recv(int(longitud_int))
+            tickets=json.loads(dict_filtro.decode())
+
+            if len(tickets)==0:
+                print("No hay resultados para la busqueda!\n")
+            else:
+                print(len(tickets))
+                print("Resultados de la busqueda: \n")
+                for k, v in tickets.items():
+                    for key, value in v.items():
+                        print(f"{key}: {value}\t")
+                    print("\n")
+
             mensaje_exito = client_socket.recv(1024).decode()
             print(mensaje_exito)
 
@@ -75,7 +84,7 @@ if __name__ == "__main__":
             if test is False:
                 continue
             client_socket.sendto(test.encode(), (host, port))  # Envio ID ticket al servidor
-            menu = client_socket.recv(1024).decode()
+            menu = client_socket.recv(1024).decode() #Recibo el Menu desde el metodo menu_edicion
             print(menu)
             edit_option = input("Opcion: ")
             while edit_option not in ('1', '2', '3'):
@@ -94,12 +103,7 @@ if __name__ == "__main__":
             clear_screen()
 
         elif (opcion == "EXPORTAR" and (test is True or test is not None)):
-            lista_tickets = session.query(Ticket).filter()
-            if test is True:
-                procesamiento_csv(lista_tickets)
-            else:
-                lista_tickets = aplicar_filtro(test, lista_tickets)
-                procesamiento_csv(lista_tickets)
+            client_socket.sendto(json.dumps(test).encode(),(host,port)) #Mandamos datos de filtro o  Boolean lista compelta
             mensaje_exito = client_socket.recv(1024).decode()
             print(mensaje_exito)
         elif (opcion == "SALIR" and test is True):

@@ -104,7 +104,7 @@ def validar_comando(cadena):
                 filter_dict[str(opcion)] = valor
 
             if opcion in ('--editar', '-e') and validar_numero(valor) is True:
-                if validar_ticket(valor) is False:
+                if validar_ticket(valor) is True:
                     retorno = ('EDITAR', valor)
                 else:
                     print("Ticket invalido!")
@@ -132,7 +132,6 @@ def validar_comando(cadena):
     except getopt.GetoptError as e:
         print("Error en el comando ingresado, por favor, revise su sintaxis e ingreselo nuevamente.")
 
-    print(f"EL RETORNO ES {retorno}")
     return retorno
 def control_ejecucion():
     host=None
@@ -148,3 +147,16 @@ def control_ejecucion():
         print("¡Debe especificar el host y puerto!")
         sys.exit(1)
     return (host,port)
+
+def control_longitud_filtro(longitud):
+    longitud_int=None
+    control = True
+    lista_longitud = list(longitud)
+    while control is True:
+        try:
+            valor = "".join(lista_longitud)
+            longitud_int = int(valor)
+            control = False
+        except ValueError:
+            lista_longitud.pop()
+    return longitud_int
