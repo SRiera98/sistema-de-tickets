@@ -2,25 +2,27 @@
 import json
 import os
 import socket
+import time
+from socket import gethostbyname
 import sys
+from sqlakeyset import get_page
 from datetime import datetime
 from getopt import getopt, GetoptError
 from multiprocessing import Lock
 from threading import Thread, BoundedSemaphore
-
 from filtro import aplicar_filtro
 from funciones_DB import guardar_ticket, listar_tickets
 from funciones_generales import menu_edicion, procesamiento_csv
 from modelo import MyEncoder, Ticket
 from run_DB import session
 from validaciones import logger, validar_numero
-
+import math
 
 def thread_fuction(port, sock, lista_clientes, i, semaforo):
     while True:
         msg = clientsocket.recv(1024)
         print(f"Recibido  del puerto {port} atendido por PID {os.getpid()}:  {msg.decode()}")
-        logger(sock, msg) #logger para almacenar comandos realizados.
+        logger(sock, msg)  # logger para almacenar comandos realizados.
 
         if (msg.decode() == 'INSERTAR'):
             with lock:
@@ -40,24 +42,38 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
                         estado = value
                 print(final_data)
                 guardar_ticket(autor, titulo, descripcion, estado, fecha=datetime.now())
-                sock.sendto("¡Ticket creado correctamente!\n".encode(),(host,port))
+                sock.sendto("¡Ticket creado correctamente!\n".encode(), (host, port))
             # for ip,puerto in lista_clientes:
             # ip_actual,puerto_actual=sock.getpeername()
             # if not puerto_actual==puerto:
             # sock.sendto(f"El cliente de Puerto {puerto_actual} agrego un ticket!".encode(), (host, puerto))
         elif (msg.decode() == 'LISTAR'):
-            lista=listar_tickets()
-            lista_dict=dict()
-            for i in lista:
-                lista_dict[i.ticketId]=i
-            datos=json.dumps(lista_dict,cls=MyEncoder)
-            sock.sendto(str(len(datos)).encode(),(host,port)) #Enviamos longitud de diccionario a cliente
-            sock.sendto(datos.encode(),(host,port)) #Enviamos  diccionario JSON
-            sock.sendto("\n¡Comando OK!\n".encode(),(host,port))
+            lista = listar_tickets()
+            lista_dict = dict()
+            total_paginas=math.ceil(len(lista)/10) #dividimos el total de tickets por la cantidad de paginas
+            sock.sendto(str(total_paginas).encode(),(host,port))
+            control="-s"
+            num_pagina=-1
+            while control=="-s":
+                num_pagina+=1
+                query = session.query(Ticket).limit(10).offset(num_pagina * 10)
+                current_pages = session.execute(query).fetchall()
+                for i in current_pages:
+                    ticket=Ticket(ticketId=i[0],fecha=i[1],titulo=i[2],autor=i[3],descripcion=i[4],estado=i[5])
+                    lista_dict[ticket.ticketId] = ticket
+                datos = json.dumps(lista_dict, cls=MyEncoder)
+                sock.sendto(datos.encode(), (host, port))  # Enviamos  diccionario JSON
+                if num_pagina==total_paginas:
+                    break
+                else:
+                    control=sock.recv(1024).decode()
+                    lista_dict = dict()
+
+
 
         elif (msg.decode() == 'EDITAR'):
             block = None
-            identificador_ticket = sock.recv(4024).decode() #Recibo ID del cliente.
+            identificador_ticket = sock.recv(4024).decode()  # Recibo ID del cliente.
             lista_ids_edicion.append(identificador_ticket)
             print(f"Lista actual: {lista_ids_edicion.count(identificador_ticket)}\n\n")
             menu_edicion(sock, host, port, int(identificador_ticket))
@@ -89,8 +105,8 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
                 """
         elif (msg.decode() == 'FILTRAR'):
             lista_tickets = session.query(Ticket).filter()
-            filtros=sock.recv(1024).decode()
-            filtros_dict=json.loads(filtros)
+            filtros = sock.recv(1024).decode()
+            filtros_dict = json.loads(filtros)
             lista_tickets = aplicar_filtro(filtros_dict, lista_tickets)
             lista_dict = dict()
             for i in lista_tickets:
@@ -104,7 +120,7 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
         elif (msg.decode() == "LIMPIAR"):
             pass
         elif (msg.decode() == 'EXPORTAR'):
-            test=json.loads(sock.recv(1024).decode()) #Recivimos filtros o boolean lista completa.
+            test = json.loads(sock.recv(1024).decode())  # Recivimos filtros o boolean lista completa.
             lista_tickets = session.query(Ticket).filter()
             if test is True:
                 procesamiento_csv(lista_tickets)
@@ -125,13 +141,14 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
         if not msg or msg in {"", " ", None}:
             break
 
+
 if __name__ == "__main__":
     # creamos el objeto socket
     try:
-        (opt, arg) = getopt(sys.argv[1:], 'p:',["puerto="])
-        for opcion,valor in opt:
-            if opcion in ("-p","--puerto") and validar_numero(valor) is True:
-                port=int(valor)
+        (opt, arg) = getopt(sys.argv[1:], 'p:', ["puerto="])
+        for opcion, valor in opt:
+            if opcion in ("-p", "--puerto") and validar_numero(valor) is True:
+                port = int(valor)
     except GetoptError as e:
         print("La estructura de comando es incorrecta.")
         sys.exit(1)
@@ -142,9 +159,8 @@ if __name__ == "__main__":
         print('Fallo al crear el socket!')
         sys.exit(1)
 
-
     # Establecemos parametros
-    host = "localhost"
+    host = '0.0.0.0'
 
     # Blindeamos el puerto y el host
     try:

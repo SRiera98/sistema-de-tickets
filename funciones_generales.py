@@ -156,7 +156,9 @@ def control_longitud_filtro(longitud):
         try:
             valor = "".join(lista_longitud)
             longitud_int = int(valor)
+            print(f"valor dentro de funcion {longitud_int}")
             control = False
         except ValueError:
             lista_longitud.pop()
+    print(f"valor dentro de funcion {longitud_int}")
     return longitud_int

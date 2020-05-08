@@ -47,27 +47,34 @@ if __name__ == "__main__":
             client_socket.sendto(json_data.encode(), (host, port))
             print(client_socket.recv(1024).decode())  # Mensaje de feedback satisfactorio.
         elif (opcion == 'LISTAR' and test is True):
-            longitud=client_socket.recv(1024).decode()
-            tickets=client_socket.recv(int(longitud))
-            dict_tickets=json.loads(tickets.decode())
-            for k,v in dict_tickets.items():
-                for key,value in v.items():
-                    print(f"{key}: {value}\t")
-                print("\n")
-            mensaje_exito = client_socket.recv(1024).decode()
-            print(mensaje_exito)
+            total_paginas=int(client_socket.recv(1024).decode())
+            control="-s"
+            num_pagina=-1
+            while control=="-s":
+                num_pagina+=1
+                tickets=client_socket.recv(2000).decode()
+                dict_tickets = json.loads(tickets)
+                for k, v in dict_tickets.items():
+                    for key, value in v.items():
+                        print(f"{key}: {value}\t")
+                    print("\n")
+                if num_pagina==total_paginas:
+                    break
+                control=input("¿Desea ver más paginas? -s/-n: ")
+                client_socket.sendto(control.encode(),(host,port))
+
 
         elif (opcion == 'FILTRAR' and test is not None):
 
-            client_socket.sendto(json.dumps(test).encode(),(host,port))
+            client_socket.sendto(json.dumps(test).encode(), (host, port))
 
             longitud = client_socket.recv(5).decode()
-            longitud_int=control_longitud_filtro(longitud)
+            longitud_int = control_longitud_filtro(longitud)
 
-            dict_filtro=client_socket.recv(int(longitud_int))
-            tickets=json.loads(dict_filtro.decode())
+            dict_filtro = client_socket.recv(int(longitud_int))
+            tickets = json.loads(dict_filtro.decode())
 
-            if len(tickets)==0:
+            if len(tickets) == 0:
                 print("No hay resultados para la busqueda!\n")
             else:
                 print(len(tickets))
@@ -84,7 +91,7 @@ if __name__ == "__main__":
             if test is False:
                 continue
             client_socket.sendto(test.encode(), (host, port))  # Envio ID ticket al servidor
-            menu = client_socket.recv(1024).decode() #Recibo el Menu desde el metodo menu_edicion
+            menu = client_socket.recv(1024).decode()  # Recibo el Menu desde el metodo menu_edicion
             print(menu)
             edit_option = input("Opcion: ")
             while edit_option not in ('1', '2', '3'):
@@ -103,7 +110,8 @@ if __name__ == "__main__":
             clear_screen()
 
         elif (opcion == "EXPORTAR" and (test is True or test is not None)):
-            client_socket.sendto(json.dumps(test).encode(),(host,port)) #Mandamos datos de filtro o  Boolean lista compelta
+            client_socket.sendto(json.dumps(test).encode(),
+                                 (host, port))  # Mandamos datos de filtro o  Boolean lista compelta
             mensaje_exito = client_socket.recv(1024).decode()
             print(mensaje_exito)
         elif (opcion == "SALIR" and test is True):
