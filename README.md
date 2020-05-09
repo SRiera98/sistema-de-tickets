@@ -1,6 +1,7 @@
 # Sistema de Tickets
 Sistema de Tickets hecho en Python utilizando el ORM
 [![N|Solid](https://www.sqlalchemy.org/img/sqla_logo.png)](https://www.sqlalchemy.org/)
+
 Se implementaron Sockets siguiendo el Protocolo TCP para el diseño tanto del servidor como del cliente.
 # Ayuda y uso básico de la aplicación
 #### Servidor
