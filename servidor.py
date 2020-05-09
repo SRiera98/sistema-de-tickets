@@ -3,9 +3,7 @@ import json
 import os
 import socket
 import time
-from socket import gethostbyname
 import sys
-from sqlakeyset import get_page
 from datetime import datetime
 from getopt import getopt, GetoptError
 from multiprocessing import Lock
@@ -18,7 +16,7 @@ from run_DB import session
 from validaciones import logger, validar_numero
 import math
 
-def thread_fuction(port, sock, lista_clientes, i, semaforo):
+def thread_fuction(port, sock, lista_clientes, i, semaforo,direccion):
     while True:
         msg = clientsocket.recv(1024)
         print(f"Recibido  del puerto {port} atendido por PID {os.getpid()}:  {msg.decode()}")
@@ -48,6 +46,7 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
             # if not puerto_actual==puerto:
             # sock.sendto(f"El cliente de Puerto {puerto_actual} agrego un ticket!".encode(), (host, puerto))
         elif (msg.decode() == 'LISTAR'):
+            print(f"LA DIRECCION ES {socket.gethostbyname(socket.gethostname())}")
             lista = listar_tickets()
             lista_dict = dict()
             total_paginas=math.ceil(len(lista)/10) #dividimos el total de tickets por la cantidad de paginas
@@ -97,10 +96,29 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo):
 
         elif (msg.decode() == 'EDITAR'):
             block = None
-            identificador_ticket = sock.recv(4024).decode()  # Recibo ID del cliente.
+            identificador_ticket = sock.recv(1024).decode()  # Recibo ID del cliente.
             lista_ids_edicion.append(identificador_ticket)
             print(f"Lista actual: {lista_ids_edicion.count(identificador_ticket)}\n\n")
-            menu_edicion(sock, host, port, int(identificador_ticket))
+            total_tickets=len(lista_ids_edicion)
+            if total_tickets>1:
+                if lista_ids_edicion.count(identificador_ticket)>1:
+                        print("hola")
+                        while True:
+                            print("while true")
+                            print(lock.acquire())
+                            if not lock.acquire():
+                                menu_edicion(sock, host, port, int(identificador_ticket))
+                                lista_ids_edicion.remove(identificador_ticket)
+                                break
+                else:
+                    lock.release()
+                    menu_edicion(sock, host, port, int(identificador_ticket))
+            else:
+                lock.acquire()
+                menu_edicion(sock, host, port, int(identificador_ticket))
+                lock.release()
+                lista_ids_edicion.remove(identificador_ticket)
+                print("ELSE >1")
             """
             for i in range(len(lista_ids_edicion)):
                 for j in range(len(lista_ids_edicion)-1):
@@ -179,8 +197,8 @@ if __name__ == "__main__":
     except NameError:
         print("Nunca se especifico el puerto!")
         sys.exit(1)
-    # Establecemos 5 peticiones de escucha como maximo.
-    serversocket.listen(5)
+    # Establecemos 10 peticiones de escucha como maximo.
+    serversocket.listen(10)
 
     lista_clientes = list()  # Lista que tiene los clientes actuales.
     lista_ids_edicion = list()
@@ -192,5 +210,5 @@ if __name__ == "__main__":
         lista_clientes.append(clientsocket.getpeername())
         print('Conexion establecida: SERVER ON')
         i = 0
-        conection = Thread(target=thread_fuction, args=(port, clientsocket, lista_clientes, i, semaforo))
+        conection = Thread(target=thread_fuction, args=(port, clientsocket, lista_clientes, i, semaforo,addr))
         conection.start()

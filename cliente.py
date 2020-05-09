@@ -4,7 +4,6 @@ import sys
 
 from funciones_generales import validar_comando, control_ejecucion, control_longitud_filtro
 from validaciones import validar_estado, clear_screen
-
 if __name__ == "__main__":
 
     host, port = control_ejecucion()
@@ -32,6 +31,7 @@ if __name__ == "__main__":
         entrada = input('>>> ')
 
         opcion, test = validar_comando(entrada.lower())
+        print(f"OPCION ES {opcion}")
         client_socket.sendto(opcion.encode(), (host, port))
 
         if (opcion == 'INSERTAR' and test is True):

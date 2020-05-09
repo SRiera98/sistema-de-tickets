@@ -3,7 +3,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import getenv
 from dotenv import load_dotenv
-
 load_dotenv()#Cargamos las variables del entorno.
 
 # Configuramos motor de BD
