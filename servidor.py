@@ -2,7 +2,7 @@
 import json
 import os
 import socket
-import time
+import threading
 import sys
 from datetime import datetime
 from getopt import getopt, GetoptError
@@ -10,62 +10,67 @@ from multiprocessing import Lock
 from threading import Thread, BoundedSemaphore
 from filtro import aplicar_filtro
 from funciones_DB import guardar_ticket, listar_tickets
-from funciones_generales import menu_edicion, procesamiento_csv
+from funciones_generales import menu_edicion, procesamiento_csv, control_filtro
 from modelo import MyEncoder, Ticket
 from run_DB import session
 from validaciones import logger, validar_numero
 import math
 
-def thread_fuction(port, sock, lista_clientes, i, semaforo,direccion):
+def thread_fuction(port, sock, lista_clientes, i, semaforo, direccion):
     while True:
-        msg = clientsocket.recv(1024)
+        print("SOY LA PRIMERA LINEA DEL WHILE TRUE SERVIDOR!")
+        sys.stdin.flush()  # debemos limpiar el buffer
+        msg = clientsocket.recv(512)
+        print(f"OPCION ES {msg.decode()}")
         print(f"Recibido  del puerto {port} atendido por PID {os.getpid()}:  {msg.decode()}")
         logger(sock, msg)  # logger para almacenar comandos realizados.
 
         if (msg.decode() == 'INSERTAR'):
-            with lock:
+            lock.acquire()
+            print("LINEA LOCK")
+            dict_data = sock.recv(1024).decode()
+            final_data = json.loads(dict_data)
+            final_data = dict(final_data)
+            print(f"entre con thread {threading.currentThread().ident}")
+            for key, value in final_data.items():
+                if key == "autor":
+                    autor = value
+                elif key == "titulo":
+                    titulo = value
+                elif key == "descripcion":
+                    descripcion = value
+                elif key == "estado":
+                    estado = value
+            print(final_data)
 
-                dict_data = sock.recv(1024).decode()
-                final_data = json.loads(dict_data)
-                final_data = dict(final_data)
-
-                for key, value in final_data.items():
-                    if key == "autor":
-                        autor = value
-                    elif key == "titulo":
-                        titulo = value
-                    elif key == "descripcion":
-                        descripcion = value
-                    elif key == "estado":
-                        estado = value
-                print(final_data)
-                guardar_ticket(autor, titulo, descripcion, estado, fecha=datetime.now())
-                sock.sendto("¡Ticket creado correctamente!\n".encode(), (host, port))
-            # for ip,puerto in lista_clientes:
-            # ip_actual,puerto_actual=sock.getpeername()
-            # if not puerto_actual==puerto:
-            # sock.sendto(f"El cliente de Puerto {puerto_actual} agrego un ticket!".encode(), (host, puerto))
+            guardar_ticket(autor, titulo, descripcion, estado, fecha=datetime.now())
+            sock.sendto("¡Ticket creado correctamente!\n".encode(), (host, port))
+            lock.release()
+        # for ip,puerto in lista_clientes:
+        # ip_actual,puerto_actual=sock.getpeername()
+        # if not puerto_actual==puerto:
+        # sock.sendto(f"El cliente de Puerto {puerto_actual} agrego un ticket!".encode(), (host, puerto))
         elif (msg.decode() == 'LISTAR'):
             print(f"LA DIRECCION ES {socket.gethostbyname(socket.gethostname())}")
             lista = listar_tickets()
             lista_dict = dict()
-            total_paginas=math.ceil(len(lista)/10) #dividimos el total de tickets por la cantidad de paginas
-            sock.sendto(str(total_paginas).encode(),(host,port))
-            control="-s"
-            num_pagina=-1
-            while control=="-s":
-                num_pagina+=1
+            total_paginas = math.ceil(len(lista) / 10)  # dividimos el total de tickets por la cantidad de paginas
+            sock.sendto(str(total_paginas).encode(), (host, port))
+            control = "-s"
+            num_pagina = -1
+            while control == "-s":
+                num_pagina += 1
                 query = session.query(Ticket).limit(10).offset(num_pagina * 10)
                 current_pages = session.execute(query).fetchall()
                 for i in current_pages:
-                    ticket=Ticket(ticketId=i[0],fecha=i[1],titulo=i[2],autor=i[3],descripcion=i[4],estado=i[5])
+                    ticket = Ticket(ticketId=i[0], fecha=i[1], titulo=i[2], autor=i[3], descripcion=i[4], estado=i[5])
                     lista_dict[ticket.ticketId] = ticket
                 datos = json.dumps(lista_dict, cls=MyEncoder)
                 sock.sendto(datos.encode(), (host, port))  # Enviamos  diccionario JSON
-                if num_pagina==total_paginas:
+                if num_pagina == total_paginas:
                     break
                 else:
-                    control=sock.recv(1024).decode()
+                    control = sock.recv(1024).decode()
                     lista_dict = dict()
 
         elif (msg.decode() == 'FILTRAR'):
@@ -75,7 +80,8 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo,direccion):
             filtros_dict = json.loads(filtros)
             lista_tickets = aplicar_filtro(filtros_dict, lista_tickets)
             lista_dict = dict()
-            total_paginas = math.ceil(len(lista_tickets.all()) / 10)  # dividimos el total de tickets por la cantidad de paginas
+            total_paginas = math.ceil(
+                len(lista_tickets.all()) / 10)  # dividimos el total de tickets por la cantidad de paginas
             sock.sendto(str(total_paginas).encode(), (host, port))
             control = "-s"
             num_pagina = -1
@@ -99,49 +105,30 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo,direccion):
             identificador_ticket = sock.recv(1024).decode()  # Recibo ID del cliente.
             lista_ids_edicion.append(identificador_ticket)
             print(f"Lista actual: {lista_ids_edicion.count(identificador_ticket)}\n\n")
-            total_tickets=len(lista_ids_edicion)
-            if total_tickets>1:
+            total_tickets = len(lista_ids_edicion)
+            menu_edicion(sock, host, port, int(identificador_ticket))
+
+            """
+                        if total_tickets>1:
                 if lista_ids_edicion.count(identificador_ticket)>1:
                         print("hola")
                         while True:
                             print("while true")
-                            print(lock.acquire())
-                            if not lock.acquire():
+                            if lock.acquire():
+                                print("lock acquires")
                                 menu_edicion(sock, host, port, int(identificador_ticket))
                                 lista_ids_edicion.remove(identificador_ticket)
                                 break
                 else:
-                    lock.release()
+                    print("ELSE DE IF PEQUEÑO")
                     menu_edicion(sock, host, port, int(identificador_ticket))
+                    lista_ids_edicion.remove(identificador_ticket)
             else:
                 lock.acquire()
                 menu_edicion(sock, host, port, int(identificador_ticket))
                 lock.release()
                 lista_ids_edicion.remove(identificador_ticket)
                 print("ELSE >1")
-            """
-            for i in range(len(lista_ids_edicion)):
-                for j in range(len(lista_ids_edicion)-1):
-                    if len(lista_ids_edicion)==1 or lista_ids_edicion[i] == lista_ids_edicion[j+1]:
-                        lock.acquire() #Revisar
-                        menu_edicion(sock, host, port, identificador_ticket)
-                        lock.release()
-                    else:
-                        menu_edicion(sock,host,port,identificador_ticket)
-            
-               
-            if len(lista_ids_edicion) == 1:
-                semaforo.acquire()
-                menu_edicion(sock, host, port, identificador_ticket)
-                semaforo.release()
-                lista_ids_edicion.remove(identificador_ticket)
-            elif len(lista_ids_edicion) > 1:
-                if identificador_ticket in lista_ids_edicion:
-                    block = True
-                elif identificador_ticket not in lista_ids_edicion:
-                    block = False
-                if block:
-                    lista_ids_edicion.remove(identificador_ticket)
                     # VER CONDITION VARIABLES de threading Condition
                     # https://docs.python.org/2.0/lib/condition-objects.html
                 """
@@ -150,14 +137,21 @@ def thread_fuction(port, sock, lista_clientes, i, semaforo,direccion):
             pass
         elif (msg.decode() == 'EXPORTAR'):
             test = json.loads(sock.recv(1024).decode())  # Recivimos filtros o boolean lista completa.
+            if control_filtro(test):
+                continue
+            print(f"VALOR TEST {test}")
             lista_tickets = session.query(Ticket).filter()
-            if test is True:
-                procesamiento_csv(lista_tickets)
-            else:
+            if test is not True:
                 lista_tickets = aplicar_filtro(test, lista_tickets)
-                procesamiento_csv(lista_tickets)
-            sock.sendto("\n¡Tickets exportados con exito!\n".encode(), (host, port))
-            pass
+            ticket_dict=dict()
+            for ticket in lista_tickets:
+                ticket_dict[ticket.ticketId] = ticket
+            longitud_json=len(json.dumps(ticket_dict, cls=MyEncoder))
+            print(f"LONGITUD ES {longitud_json}")
+            sock.sendto(str(longitud_json).encode(),(host,port))
+            sock.sendto(json.dumps(ticket_dict, cls=MyEncoder).encode(),(host,port))
+            #sock.sendto("\n¡Tickets exportados con exito!\n".encode(), (host, port))
+
         elif (msg.decode() == "SALIR"):
             for ip, puerto in lista_clientes:
                 ip_actual, puerto_actual = sock.getpeername()
@@ -197,8 +191,8 @@ if __name__ == "__main__":
     except NameError:
         print("Nunca se especifico el puerto!")
         sys.exit(1)
-    # Establecemos 10 peticiones de escucha como maximo.
-    serversocket.listen(10)
+    # Establecemos 5 peticiones de escucha como maximo.
+    serversocket.listen(5)
 
     lista_clientes = list()  # Lista que tiene los clientes actuales.
     lista_ids_edicion = list()
@@ -210,5 +204,5 @@ if __name__ == "__main__":
         lista_clientes.append(clientsocket.getpeername())
         print('Conexion establecida: SERVER ON')
         i = 0
-        conection = Thread(target=thread_fuction, args=(port, clientsocket, lista_clientes, i, semaforo,addr))
+        conection = Thread(target=thread_fuction, args=(port, clientsocket, lista_clientes, i, semaforo, addr))
         conection.start()

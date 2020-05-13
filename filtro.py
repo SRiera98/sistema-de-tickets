@@ -3,7 +3,8 @@ import sys
 from sqlalchemy import func as sql_recursos
 from datetime import datetime
 from modelo import Ticket
-from validaciones import validar_fecha
+from validaciones import validar_fecha, validar_estado
+
 
 def mostrar_menu_filtro():
     exit = False
@@ -25,22 +26,19 @@ def mostrar_menu_filtro():
             exit = True
     return filtros
 def filtrar_fecha(lista_tickets,fecha):
-    #fecha=input("Ingrese la fecha por la que desea buscar (formato DD-MM-YYYY): ")
-    if validar_fecha(fecha) is False:
+    if validar_fecha(fecha):
         fecha = datetime.strptime(fecha, "%d-%m-%Y").date()
     else:
-        print("Formato de fecha incorrecto, ejecute correctamente el comando: ")
+        print("Formato de fecha incorrecto, ejecute correctamente el comando ")
     lista_tickets = lista_tickets.filter(Ticket.fecha.like(str(fecha) + "%"))
     return lista_tickets
 
 def filtrar_autor(lista_tickets,autor):
-    #autor=input("Ingrese el autor por el que desea filtrar: ")
     lista_tickets=lista_tickets.filter(sql_recursos.lower(Ticket.autor)==sql_recursos.lower(autor))
     return lista_tickets
 
 def filtrar_estado(lista_tickets,estado):
-    #estado = input("Ingrese el estado por el que desea filtrar: ")
-    if estado not in ("pendiente", "en procesamiento", "resuelto"):
+    if validar_estado(estado):
         print("Error en el estado ingresado, ejecute nuevamente\n")
     else:
         lista_tickets = lista_tickets.filter(Ticket.estado == estado)

@@ -11,7 +11,7 @@ from multiprocessing import Process
 
 from modelo import Ticket
 from run_DB import session
-from validaciones import validar_ticket, validar_numero
+from validaciones import validar_ticket, validar_numero, validar_ip, validar_fecha, validar_estado
 import re
 
 def csv_manager(lista_tickets):
@@ -24,13 +24,13 @@ def csv_manager(lista_tickets):
             writer.writerow({'ticketId': str(ticket.ticketId), 'fecha': str(ticket.fecha), 'titulo': ticket.titulo,
                              'autor': ticket.autor, 'descripcion': ticket.descripcion, 'estado': ticket.estado})
     csv_compress(nombre_archivo)
-def csv_compress(filename):
+def csv_compress(archivo):
     directorio="CSV_Tickets"
     if not os.path.exists(directorio):
         os.mkdir(directorio)
     nombre_zip=secure_filename("csv ticket - fecha: "+str(datetime.now().strftime("%d-%m-%Y_%H.%M.%S")))
-    with ZipFile("CSV_Tickets/"+nombre_zip+".zip", 'w') as zip:
-        zip.write(filename)
+    with ZipFile(directorio+"/"+nombre_zip+".zip", 'w') as zip:
+        zip.write(archivo)
 
 def procesamiento_csv(tickets):
     proceso=Process(target=csv_manager,args=(tickets,))
@@ -39,12 +39,13 @@ def procesamiento_csv(tickets):
 def menu_edicion(sock,host,port,identificador_ticket):
 
     ticket_editar = session.query(Ticket).filter(Ticket.ticketId == identificador_ticket).one()
-
+    print("ANTES DEL MENU")
     sock.sendto("\t\t¿Que desea editar?\n\t"
                 "1. Editar titulo\n\t"
                 "2. Editar estado\n\t"
                 "3. Editar descripcion\n\t".encode(), (host, port)) #Enviamos al cliente el MENU
     opcion = sock.recv(1024).decode() #Recibimos la eleccion del cliente.
+    print("DESPUES DEL MENU")
     if int(opcion) == 1:
         sock.sendto("Ingrese el nuevo titulo a colocar: ".encode(), (host, port))
         nuevo_titulo = sock.recv(1024).decode()
@@ -131,7 +132,7 @@ def validar_comando(cadena):
 
     except getopt.GetoptError as e:
         print("Error en el comando ingresado, por favor, revise su sintaxis e ingreselo nuevamente.")
-
+    print(f"EL RETORNO ES {retorno}")
     return retorno
 def control_ejecucion():
     host=None
@@ -141,7 +142,7 @@ def control_ejecucion():
         for opcion, valor in opt:
             if opcion in ("-p", "--puerto") and validar_numero(valor) is True:
                 port = int(valor)
-            if opcion in ("-h","--host") and validar_numero(valor) is False:
+            if opcion in ("-h","--host") and (valor in ("localhost","") or validar_ip(valor) is True):
                 host=valor
     except getopt.GetoptError as e:
         print("¡Debe especificar el host y puerto!")
@@ -156,9 +157,23 @@ def control_longitud_filtro(longitud):
         try:
             valor = "".join(lista_longitud)
             longitud_int = int(valor)
-            print(f"valor dentro de funcion {longitud_int}")
             control = False
         except ValueError:
             lista_longitud.pop()
-    print(f"valor dentro de funcion {longitud_int}")
     return longitud_int
+
+def control_filtro(test):
+    control_fecha = None
+    control_estado = None
+    if test is not True:
+        for k, v in test.items():
+            if k in ('--fecha', '-f'):
+                control_fecha = validar_fecha(v)
+            elif k in ('--estado', '-d'):
+                control_estado = validar_estado(v)
+    if control_fecha is False or control_estado:
+        print("La sintaxis de filtros ha fallado, ejecute nuevamente el comando.")
+        retorno=True
+    else:
+        retorno=False
+    return retorno

@@ -31,8 +31,7 @@ export DB_PASS=contraseña_bd
 export DB_NAME=nombre_esquema_bd
 ```
 Posteriormente procedemos a guardar el archivo.
-Donde el archivo txt contiene los nombres de las librerias usadas en el proyecto
 ##### 4) Ejecutar run_DB.py con el entorno activado. 
-Esto creara la tabla tickets donde el socket servidor ira almacenando los tickets de los clientes.
+Esto creara la tabla tickets donde el servidor ira almacenando los tickets de los clientes.
 ##### 5) Finalmente ya estamos listos para proceder a ejecutar nuestro servidor y el o los clientes.
-Para ello proceguir leyendo el archivo **README.md**
+Para ello proseguir leyendo el archivo **README.md**

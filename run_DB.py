@@ -1,6 +1,6 @@
 from modelo import Base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
 from dotenv import load_dotenv
 load_dotenv()#Cargamos las variables del entorno.

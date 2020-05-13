@@ -3,14 +3,14 @@ from sqlalchemy.orm.exc import NoResultFound
 from modelo import Ticket
 from run_DB import session
 from os import system
-
+from IPy import IP
 
 def validar_fecha(fecha):
     try:
         opt = datetime.strptime(fecha, "%d-%m-%Y")
-        retorno = False
-    except ValueError:
         retorno = True
+    except ValueError:
+        retorno = False
     return retorno
 
 
@@ -37,7 +37,7 @@ def validar_numero(numero):
         if isinstance(int(numero), int):
             retorno = True
     except ValueError:
-        print("Has ingresado una letra!")
+        print("Error de valor")
         retorno = False
     return retorno
 
@@ -52,3 +52,12 @@ def logger(sock, msg):
 
 def clear_screen():
     system('clear')
+
+def validar_ip(ip):
+    retorno=None
+    try:
+        IP(str(ip))
+        retorno=True
+    except ValueError:
+        retorno=False
+    return retorno

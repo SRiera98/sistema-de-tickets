@@ -1,9 +1,13 @@
 import json
+import pickle
 import socket
 import sys
+import time
+from funciones_generales import validar_comando, control_ejecucion, control_longitud_filtro, procesamiento_csv, \
+    control_filtro
+from modelo import Ticket
+from validaciones import validar_estado, clear_screen, validar_fecha
 
-from funciones_generales import validar_comando, control_ejecucion, control_longitud_filtro
-from validaciones import validar_estado, clear_screen
 if __name__ == "__main__":
 
     host, port = control_ejecucion()
@@ -35,6 +39,7 @@ if __name__ == "__main__":
         client_socket.sendto(opcion.encode(), (host, port))
 
         if (opcion == 'INSERTAR' and test is True):
+
             sys.stdin.flush()  # debemos limpiar el buffer
             autor = input("\nIngrese autor del Ticket: ")
             titulo = input("\nIngrese titulo del ticket: ")
@@ -43,27 +48,29 @@ if __name__ == "__main__":
             while validar_estado(estado):
                 estado = input("Estado debe ser uno de los pedidos, intentelo nuevamente: ")
             data = {"autor": autor, "titulo": titulo, "descripcion": descripcion, "estado": estado}
+            print("DATOS DEL TICKET")
+            print(data)
             json_data = json.dumps(data)  # Convertimos el diccionario a JSON
             client_socket.sendto(json_data.encode(), (host, port))
             print(client_socket.recv(1024).decode())  # Mensaje de feedback satisfactorio.
         elif (opcion == 'LISTAR' and test is True):
-            total_paginas=int(client_socket.recv(1024).decode())
-            control="-s"
-            num_pagina=-1
-            while control=="-s":
-                num_pagina+=1
-                tickets=client_socket.recv(2000).decode()
+            total_paginas = int(client_socket.recv(1024).decode())
+            control = "-s"
+            num_pagina = -1
+            while control == "-s":
+                num_pagina += 1
+                tickets = client_socket.recv(2000).decode()
                 dict_tickets = json.loads(tickets)
                 for k, v in dict_tickets.items():
                     for key, value in v.items():
                         print(f"{key}: {value}\t")
                     print("\n")
-                if num_pagina==total_paginas:
+                if num_pagina == total_paginas:
                     break
-                control=input("¿Desea ver más paginas? -s/-n: ")
-                while control not in ("-s",'-n'):
+                control = input("¿Desea ver más paginas? -s/-n: ")
+                while control not in ("-s", '-n'):
                     control = input("Opción incorrecto, recuerde: -s/-n: ")
-                client_socket.sendto(control.encode(),(host,port))
+                client_socket.sendto(control.encode(), (host, port))
 
         elif (opcion == 'FILTRAR' and test is not None):
 
@@ -76,7 +83,7 @@ if __name__ == "__main__":
                 num_pagina += 1
                 tickets = client_socket.recv(2000).decode()
                 dict_tickets = json.loads(tickets)
-                if len(dict_tickets) == 0 and num_pagina==0:
+                if len(dict_tickets) == 0 and num_pagina == 0:
                     print("¡No hay resultados para esa busqueda!")
                     break
                 for k, v in dict_tickets.items():
@@ -110,13 +117,20 @@ if __name__ == "__main__":
             print(mensaje_exito)
 
         elif (opcion == 'LIMPIAR' and test is True):
+            print("ENTRO ACA EN LIMPIAR")
             clear_screen()
 
         elif (opcion == "EXPORTAR" and (test is True or test is not None)):
-            client_socket.sendto(json.dumps(test).encode(),
-                                 (host, port))  # Mandamos datos de filtro o  Boolean lista compelta
-            mensaje_exito = client_socket.recv(1024).decode()
-            print(mensaje_exito)
+            client_socket.sendto(json.dumps(test).encode(),(host, port))  # Mandamos datos de filtro o  Boolean lista compelta
+            if control_filtro(test):
+                continue
+            longitud=control_longitud_filtro(client_socket.recv(5).decode())
+            datos=client_socket.recv(int(longitud)).decode()
+            tickets=json.loads(datos)
+            lista_tickets= list()
+            for k,v in tickets.items():
+                lista_tickets.append(Ticket(ticketId=v["ticketId"], fecha=v["fecha"], titulo=v["titulo"], autor=v["autor"], descripcion=v["descripcion"], estado=v["estado"]))
+            procesamiento_csv(lista_tickets)
         elif (opcion == "SALIR" and test is True):
             client_socket.close()
             break
