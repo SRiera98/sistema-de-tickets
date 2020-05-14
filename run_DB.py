@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()#Cargamos las variables del entorno.
 
 # Configuramos motor de BD
-engine = create_engine(f"mysql+pymysql://{getenv('DB_USERNAME')}:{getenv('DB_PASS')}@192.168.0.104/{getenv('DB_NAME')}")
+engine = create_engine(f"mysql+pymysql://{getenv('DB_USERNAME')}:{getenv('DB_PASS')}@192.168.0.106/{getenv('DB_NAME')}")
 
 # Creamos las Tablas
 Base.metadata.create_all(engine)

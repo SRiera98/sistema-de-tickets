@@ -36,8 +36,7 @@ if __name__ == "__main__":
 
         opcion, test = validar_comando(entrada.lower())
         print(f"OPCION ES {opcion}")
-        client_socket.sendto(opcion.encode(), (host, port))
-
+        client_socket.send(opcion.encode('ascii'))
         if (opcion == 'INSERTAR' and test is True):
 
             sys.stdin.flush()  # debemos limpiar el buffer
@@ -51,7 +50,8 @@ if __name__ == "__main__":
             print("DATOS DEL TICKET")
             print(data)
             json_data = json.dumps(data)  # Convertimos el diccionario a JSON
-            client_socket.sendto(json_data.encode(), (host, port))
+            #client_socket.send(str(len(json_data)).encode())
+            client_socket.send(json_data.encode())
             print(client_socket.recv(1024).decode())  # Mensaje de feedback satisfactorio.
         elif (opcion == 'LISTAR' and test is True):
             total_paginas = int(client_socket.recv(1024).decode())
@@ -70,11 +70,11 @@ if __name__ == "__main__":
                 control = input("¿Desea ver más paginas? -s/-n: ")
                 while control not in ("-s", '-n'):
                     control = input("Opción incorrecto, recuerde: -s/-n: ")
-                client_socket.sendto(control.encode(), (host, port))
+                client_socket.send(control.encode('ascii'))
 
         elif (opcion == 'FILTRAR' and test is not None):
 
-            client_socket.sendto(json.dumps(test).encode(), (host, port))
+            client_socket.send(json.dumps(test).encode('ascii'))
 
             total_paginas = int(client_socket.recv(1024).decode())
             control = "-s"
@@ -95,24 +95,24 @@ if __name__ == "__main__":
                 control = input("¿Desea ver más paginas? -s/-n: ")
                 while control not in ("-s", '-n'):
                     control = input("Opción incorrecto, recuerde: -s/-n: ")
-                client_socket.sendto(control.encode(), (host, port))
+                client_socket.send(control.encode('ascii'))
 
         elif (opcion == 'EDITAR' and test is not None):
             if test is False:
                 continue
-            client_socket.sendto(test.encode(), (host, port))  # Envio ID ticket al servidor
+            client_socket.send(test.encode('ascii'))  # Envio ID ticket al servidor
             menu = client_socket.recv(1024).decode()  # Recibo el Menu desde el metodo menu_edicion
             print(menu)
             edit_option = input("Opcion: ")
             while edit_option not in ('1', '2', '3'):
                 edit_option = input("Opcion incorrecta, intentelo nuevamente: ")
-            client_socket.sendto(edit_option.encode(), (host, port))  # Enviamos eleccion.
+            client_socket.send(edit_option.encode('ascii'))  # Enviamos eleccion.
 
-            nuevo_dato = input(client_socket.recv(4024).decode())  # Recibimos mensaje en funcion de la eleccion.
+            nuevo_dato = input(client_socket.recv(4024).decode('ascii'))  # Recibimos mensaje en funcion de la eleccion.
             if edit_option == '2':
                 while validar_estado(nuevo_dato):
                     nuevo_dato = input("El estado es incorrecto, intentelo nuevamente: ")
-            client_socket.sendto(nuevo_dato.encode(), (host, port))  # Enviamos nuevo dato.
+            client_socket.send(nuevo_dato.encode('ascii'))  # Enviamos nuevo dato.
             mensaje_exito = client_socket.recv(1024).decode()
             print(mensaje_exito)
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
             clear_screen()
 
         elif (opcion == "EXPORTAR" and (test is True or test is not None)):
-            client_socket.sendto(json.dumps(test).encode(),(host, port))  # Mandamos datos de filtro o  Boolean lista compelta
+            client_socket.send(json.dumps(test).encode('ascii'))  # Mandamos datos de filtro o  Boolean lista compelta
             if control_filtro(test):
                 continue
             longitud=control_longitud_filtro(client_socket.recv(5).decode())

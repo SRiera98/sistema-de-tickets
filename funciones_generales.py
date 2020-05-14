@@ -15,6 +15,11 @@ from validaciones import validar_ticket, validar_numero, validar_ip, validar_fec
 import re
 
 def csv_manager(lista_tickets):
+    """
+    Se encarga de la creacion del CSV, y llama a csv_compress para comprimirlo.
+    :param lista_tickets: lista de tipo Query, Se utilizara para recorrerla e ir escribiendo el .CSV.
+    :return: Nada.
+    """
     nombre_archivo="track.csv"
     with open(nombre_archivo, "w") as csv_file:
         titulos = ['ticketId', 'fecha', 'titulo', 'autor', 'descripcion', 'estado']
@@ -25,6 +30,11 @@ def csv_manager(lista_tickets):
                              'autor': ticket.autor, 'descripcion': ticket.descripcion, 'estado': ticket.estado})
     csv_compress(nombre_archivo)
 def csv_compress(archivo):
+    """
+    Comprime y almacena en un directorio el CSV creado en csv_manager.
+    :param archivo: Nombre de archivo a comprimir en .zip
+    :return: Nada
+    """
     directorio="CSV_Tickets"
     if not os.path.exists(directorio):
         os.mkdir(directorio)
@@ -33,34 +43,44 @@ def csv_compress(archivo):
         zip.write(archivo)
 
 def procesamiento_csv(tickets):
+    """
+    Se encarga de lanzar un Proceso para realizar el trabajo de exportacion de tickets.
+    :param tickets: Lista de tickets tipo Query a exportar.
+    :return: Nada
+    """
     proceso=Process(target=csv_manager,args=(tickets,))
     proceso.start()
 
-def menu_edicion(sock,host,port,identificador_ticket):
-
+def menu_edicion(sock,identificador_ticket):
+    """
+    Encargado de la edicion del ticket
+    :param sock: socket que representa un cliente.
+    :param identificador_ticket: ID de un ticket
+    :return: Nada
+    """
     ticket_editar = session.query(Ticket).filter(Ticket.ticketId == identificador_ticket).one()
     print("ANTES DEL MENU")
-    sock.sendto("\t\t¿Que desea editar?\n\t"
+    sock.send("\t\t¿Que desea editar?\n\t"
                 "1. Editar titulo\n\t"
                 "2. Editar estado\n\t"
-                "3. Editar descripcion\n\t".encode(), (host, port)) #Enviamos al cliente el MENU
-    opcion = sock.recv(1024).decode() #Recibimos la eleccion del cliente.
+                "3. Editar descripcion\n\t".encode()) #Enviamos al cliente el MENU
+    opcion = sock.recv(1024).decode('ascii') #Recibimos la eleccion del cliente.
     print("DESPUES DEL MENU")
     if int(opcion) == 1:
-        sock.sendto("Ingrese el nuevo titulo a colocar: ".encode(), (host, port))
-        nuevo_titulo = sock.recv(1024).decode()
+        sock.send("Ingrese el nuevo titulo a colocar: ".encode('ascii'))
+        nuevo_titulo = sock.recv(1024).decode('ascii')
         ticket_editar.titulo = nuevo_titulo
     elif int(opcion) == 2:
-        sock.sendto("Ingrese el nuevo estado a colocar: ".encode(), (host, port))
-        nuevo_estado = sock.recv(1024).decode()
+        sock.send("Ingrese el nuevo estado a colocar: ".encode('ascii'))
+        nuevo_estado = sock.recv(1024).decode('ascii')
         ticket_editar.estado = nuevo_estado
     elif int(opcion) == 3:
-        sock.sendto("Ingrese la nueva descripcion a colocar: ".encode(), (host, port))
-        nueva_descripcion = sock.recv(1024).decode()
+        sock.send("Ingrese la nueva descripcion a colocar: ".encode('ascii'))
+        nueva_descripcion = sock.recv(1024).decode('ascii')
         ticket_editar.descripcion = nueva_descripcion
     session.add(ticket_editar)
     session.commit()
-    sock.sendto("¡Ticket Editado con Exito!\n".encode(),(host,port))
+    sock.send("¡Ticket Editado con Exito!\n".encode())
 
 
 def parsear_comando(cadena):
