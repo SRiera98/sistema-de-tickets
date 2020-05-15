@@ -84,11 +84,15 @@ def menu_edicion(sock,identificador_ticket):
 
 
 def parsear_comando(cadena):
+    """
+    Se encarga de controlar el caso especial cuando tenemos que pasar como opcion de comando el estado "en procesamiento"
+    :param cadena: El comando ingresado por el usuario, que se utilizara en validar_comando
+    :return: Array de String que podra ser procesado por GetOpt.
+    """
     array_comando = []
     array_auxiliar= []
     if re.split("\"",cadena).count("en procesamiento")==0:
         for i in cadena.split(" "):
-            print(i)
             array_comando.append(i)
         return array_comando
     else:
@@ -103,6 +107,11 @@ def parsear_comando(cadena):
         return array_auxiliar
 
 def validar_comando(cadena):
+    """
+    Se encarga de validar el comando ingresado por el cliente mediante GetOpt.
+    :param cadena: El comando.
+    :return: Una tupla cuyo primer valor es un String de la Opción ingresada, el segundo es un un Boolean o un Filtro.
+    """
     retorno=('None',False)
     array_comando = parsear_comando(cadena)
     try:                                                #autor o -a fecha o -f estado o -d
@@ -155,6 +164,10 @@ def validar_comando(cadena):
     print(f"EL RETORNO ES {retorno}")
     return retorno
 def control_ejecucion():
+    """
+    Se encarga de parsear los parametros pasados al momento de iniciar el cliente.
+    :return: El host y el puerto con el cual el socket se conectará.
+    """
     host=None
     port=None
     try:
@@ -183,6 +196,10 @@ def control_longitud_filtro(longitud):
     return longitud_int
 
 def control_filtro(test):
+    """
+    :param test: Posible filtro ingresado.
+    :return: False si el estado y fecha son validos sintacticamente, True si no lo son.
+    """
     control_fecha = None
     control_estado = None
     if test is not True:

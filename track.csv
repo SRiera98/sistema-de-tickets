@@ -1,4 +1,179 @@
 ticketId,fecha,titulo,autor,descripcion,estado
+1,2020-04-05 17:30:49,Fork bomb,Jose,descripcion probando neiegoa,resuelto
+2,2020-04-05 20:30:39,cel brickeado mal men,Santiago,el cel se rompio por instalar gcam,en procesamiento
+3,2020-04-06 11:28:03,PC Rota,Nico,"se rompio el linux SO Selector, reinstalar windows, arreglar todo",resuelto
 4,2020-04-08 09:35:57,cambio de placa madre,Mauricio,debe comprar otra placa y hacer el cambio,resuelto
 5,2020-04-08 09:44:00,PC reinstalar SO,Mauricio,instalar Ubuntu,en procesamiento
+6,2020-04-09 18:49:03,Mantenimiento servidor,Marcos,se debera ejecutar los scripts de control,pendiente
+7,2020-04-09 18:57:02,RAID,Rumberto,se establecera RAID 7,en procesamiento
+8,2020-04-09 19:20:20,Celular roto,Jose,pantalla rota,pendiente
+9,2020-04-09 19:24:50,cel roto,Jose,pantalla rota,en procesamiento
+10,2020-04-09 19:30:56,servidor falta linux ,Lucas,oawld falta,en procesamiento
+11,2020-04-09 20:16:21,pc rota,Nico,reinstalar linux,pendiente
+12,2020-04-10 09:45:46,Flex roto,Marcos,Arreglar flex notebook,en procesamiento
+13,2020-04-10 09:50:58,Servidor anda re re mal,Rodrigo,Reemplazar disco del RAID,en procesamiento
+14,2020-04-10 11:42:20,Mouse Falla,Alberto,falla tras muchas horas de uso,pendiente
+15,2020-04-10 17:32:26,Red falla,Manuel,reemplazar cable de red,pendiente
+16,2020-04-11 12:40:45,Mouse roto,Clemente,no funciona la rueda,pendiente
+17,2020-04-11 12:46:28,PC bien rota,Marcos,mother rota,pendiente
+18,2020-04-11 16:55:10,brick instancia virtual servidor,Rosario,instalar nuevamente,en procesamiento
+19,2020-04-11 17:02:48,"PC Rota, software",Roberto,instalar windows server,pendiente
+20,2020-04-11 17:05:37,Realizar tutoriales Zoom,Rogelio,faltan tutoriales,pendiente
+21,2020-04-11 17:21:38,pc rota,Maria Fernandez,reemplazar disco,pendiente
+22,2020-04-11 17:28:19,pc falla,Lopardo,arreglar sonido,en procesamiento
+23,2020-04-11 18:06:59,oawdo pc,Rodrigo,"esta notebook esta, muy, pero que muy, rota, xd, xd, xd.",pendiente
+24,2020-04-12 09:50:38,cel roto,Rolando,"Se rompio la pantalla, quedamos en bancarrota xd",pendiente
+25,2020-04-12 10:27:58,pc dañada,Rogelio,"RAM dañada, reparar",pendiente
+26,2020-04-12 10:52:17,pc falla,Marcelo,hardware roto,pendiente
+27,2020-04-12 11:12:14,oele dodo,Manolo,arreglar,en procesamiento
+28,2020-04-12 11:15:23,Falla de software,Manuel,reinstalar Network coder,pendiente
+29,2020-04-12 11:22:25,Falla #12210,Josefina,urgente,pendiente
+30,2020-04-12 12:20:48,PC rota,Santiago,mouse,pendiente
+31,2020-04-12 17:24:43,Pad roto,Marcos,arreglar Mouse pad notebook,pendiente
+32,2020-04-12 17:24:50,dañado pc,Jose,arreglar pendrive,
+33,2020-04-12 17:27:55,Falta linux pc 91,Sofia,instalar,pendiente
+34,2020-04-12 17:28:05,PC rota,Rosario,"hardware roto, falla teclado",en procesamiento
+35,2020-04-12 17:32:10,Arreglar posibilidad home office,Alvaro,necesito el software necesario,pendiente
+36,2020-04-12 18:07:09,UPS Roto,Roberto,arreglar UPS,pendiente
+37,2020-04-12 18:18:10,arreglar servidor,Jose,contratar mas cpu AWS,pendiente
+38,2020-04-12 18:18:10,Falta windows server,Yama,PC 13,en procesamiento
+39,2020-04-12 18:25:46,PC rota,Jose,disco roto,pendiente
+40,2020-04-12 18:33:26,PC alv,Jose,malabrasoowaw,en procesamiento
+41,2020-04-12 18:33:56,servidor roto,Manuel,comprar en AWS,en procesamiento
+42,2020-04-12 18:37:11,Redmi Note 5,Roberto,SALIR,pendiente
+43,2020-04-12 18:37:11,cel roto roto,Gloria,pendiente,en procesamiento
+44,2020-04-19 17:19:46,TV dañado,Manuel,falla pantalla,pendiente
+45,2020-04-19 17:22:48,falla,Server roto,server f,pendiente
+46,2020-04-19 17:59:02,oawdo,oawdowad,oawdoawdo,pendiente
+47,2020-04-19 17:59:26,Mouse roto,Marcos,falla click,pendiente
+48,2020-04-19 18:09:43,pad roto,Pepe,falla click,en procesamiento
+49,2020-04-19 18:10:08,Disco,Rodrigo,"F, comprar otro",pendiente
+50,2020-04-19 18:36:46,teclado fail,Manel,switch MX falla,pendiente
+51,2020-04-19 19:10:12,Disco roto,oawdo,oawdodaoe,en procesamiento
+52,2020-04-21 09:53:35,PC rota,Manolo,falla disco,pendiente
+53,2020-04-24 11:32:10,PC rota,Pedro,roto disco,pendiente
+54,2020-04-24 11:37:38,PC falla,aoawod,awodawdl,pendiente
+55,2020-04-25 19:02:41,PC Fakada,Marcos,caida de 5 piso,pendiente
+56,2020-04-25 19:13:30,MAC Falla,Martha,falta tecla Esc,en procesamiento
+57,2020-04-26 17:15:13,Falla en Server,Mananel,Dockets F,pendiente
+58,2020-05-05 12:05:30,PC Rota,Lucas,oawoado,pendiente
+59,2020-05-05 12:05:31,cel roto,Marcos,tactil falla,en procesamiento
+60,2020-05-06 19:22:55,PC muy rota,Manuel,se rompio el teclado,pendiente
+61,2020-05-07 20:35:20,Pendrive roto,Jose,comprar otro,pendiente
+62,2020-05-10 11:40:42,Disco falla,Jose,oawdwoado,en procesamiento
+63,2020-05-10 11:48:33,aowdaowd,Random,oeoeoeoe,pendiente
+64,2020-05-10 11:49:02,Parlantes,Lucas,"fallan , se escuchan de un lado",en procesamiento
+65,2020-05-10 11:52:57,falla v2 mother,PC rota,oawdaowd,pendiente
 66,2020-05-10 12:01:18,aowo pc,Mauricio,oadoawo oawodd dañado,pendiente
+67,2020-05-10 12:01:41,tv falla,Pablo,dososdoao random owooto dff,en procesamiento
+68,2020-05-10 12:07:39,falla servidor,Manuel,oawodwo falla alvoawod,pendiente
+69,2020-05-10 12:12:02,pawdowad pc,Manolo,oawdodo owdao,pendiente
+70,2020-05-10 12:24:22,oawoadw,aowdowa,oweooefoaow,pendiente
+71,2020-05-10 12:28:58,oawoad aowdo,server socket falla,oeoeo wod,pendiente
+72,2020-05-10 12:29:19,mouse pad,Jose,falla random,pendiente
+73,2020-05-10 12:30:07,Drop tabla BD,Bruno,realizar Drop,pendiente
+74,2020-05-10 19:48:30,oeoe oeeo,oawdow,owadowadod owadoawdo aodwoa,pendiente
+75,2020-05-10 19:56:15,falla notebook,Jose,tecla esc falla,en procesamiento
+76,2020-05-10 20:06:12,oeeo falla,oawadowa oe,aowdo random description,pendiente
+77,2020-05-10 20:06:47,falla pc,Jose,ram rota,resuelto
+78,2020-05-10 20:12:36,fofoeo oe,oawdo,woddowo owodwo owodwo,pendiente
+79,2020-05-10 20:12:39,falla disco,Manolo,random,pendiente
+80,2020-05-10 20:17:54,oofalla,eeeeaw,pawdoawdo eo,pendiente
+81,2020-05-10 20:26:25,falla mouse,jose,comprar otro,pendiente
+82,2020-05-10 20:43:49,oeeoeod,oawdoawd,oawdowado,pendiente
+83,2020-05-10 20:46:19,ooeledo oe,aowado,aowdo random,pendiente
+84,2020-05-10 20:49:27, oadwowaow,aodwadwo,oeoaoararawd,pendiente
+85,2020-05-10 20:49:43,oadwld title,ooadwl nombre,aowdaowdwdao deod,pendiente
+86,2020-05-10 20:53:05,oawdo lefeo,oawdo e,aowadow lwodwa,pendiente
+87,2020-05-10 20:53:20,owaldaw,oadwo raodawl,odawol descripti,en procesamiento
+88,2020-05-10 20:54:49,tireuteld,oawdo autor,oawdo autorad,pendiente
+89,2020-05-10 20:54:59,tiiwaoawd,aowdodowde e,oadwie,resuelto
+90,2020-05-10 20:55:36,fafael,owaoaw oeedo,foawdldado,pendiente
+91,2020-05-10 20:55:50,oawdawdo,o autorwaodljoge,oefdaiaw,pendiente
+92,2020-05-10 20:56:43,adle awdo,oawdoef,eoedoeod,pendiente
+93,2020-05-10 20:57:38,apfawodaow,oawdo,aeldawo,pendiente
+94,2020-05-10 20:58:58,awdo,werf,eoodaowaodwa,resuelto
+95,2020-05-10 21:13:55,wwwdw,awdwadw,awdwdw,pendiente
+96,2020-05-10 21:14:04,oeadi,oawdowado,oawdwaidaw,resuelto
+97,2020-05-10 21:16:06,awdwaidwad,awdawd,awdjaw,pendiente
+98,2020-05-10 21:16:20,tiado pc rota,Jose,awodwadl awe,resuelto
+99,2020-05-10 21:18:08,pc rota,JOse,falla disco,pendiente
+100,2020-05-10 21:18:33,PC nueva,Manuel,arreglar aowdao,resuelto
+101,2020-05-10 21:21:27,oadwaod,Jose,pofalla,pendiente
+102,2020-05-13 16:11:56,ledd,oawdo,lawldwad,pendiente
+103,2020-05-13 16:21:25,titlpel exmaple,eaoda example,awdoawdo awdo,pendiente
+104,2020-05-13 16:21:50,oawdoawdl oed,autoawdo lawd,oawdaol efdo,resuelto
+105,2020-05-13 16:24:30,titple 3,aoawdo del,aowdwao,pendiente
+106,2020-05-13 16:30:23,oedle,oawdoaw,oawdodaw,en procesamiento
+107,2020-05-13 16:30:42,random,oawdoadw,random,pendiente
+108,2020-05-13 16:32:49,ked,aowd,eeee,pendiente
+109,2020-05-13 16:44:26,oawdodwl oe,awdwad auawod,aowdwado random,pendiente
+110,2020-05-13 16:47:34,awdool awdee,oawdo edoedo random,random randoawd,pendiente
+111,2020-05-13 17:04:14,owaodw,awdadw,ekekde,pendiente
+112,2020-05-13 18:00:58,oawdi,awdawd,fafa,pendiente
+113,2020-05-13 18:09:05,qowqoeq oafwalf,lolaawod,randomizer,pendiente
+114,2020-05-13 18:10:45,owowwowow,awod lwlww,qwertyu,pendiente
+115,2020-05-13 18:11:25,qweroawl,fafafaka,randddoom,en procesamiento
+116,2020-05-13 18:11:50,leleleel,jojojo,fafafa,pendiente
+117,2020-05-13 18:26:20,fade,fafe,ds,pendiente
+118,2020-05-13 18:27:03,ram pc rota,mambru,caida piso 20,pendiente
+119,2020-05-13 18:32:49,ASUS,ROG,oawdowado,resuelto
+120,2020-05-13 18:32:53,DEF,ABC,oawod,en procesamiento
+121,2020-05-13 18:49:54,wd,ad,oeoeoe,pendiente
+122,2020-05-13 18:52:00,bbb,aaa,ccc,pendiente
+123,2020-05-13 18:55:05,b,a,c,pendiente
+124,2020-05-13 18:55:19,PC rota,Jose,falla,en procesamiento
+125,2020-05-13 19:04:17,leel,oawd,oeoe,pendiente
+126,2020-05-13 19:09:05,lalawld,wowow,eoeoeo,pendiente
+127,2020-05-13 19:20:18,oeeoeo lawd,oawod jasdo,oqweoqweo lawdoawoeld oedl,pendiente
+128,2020-05-13 19:21:04,PC DAAAÑAWD,JOse,falloawdl,en procesamiento
+129,2020-05-13 19:58:50,falla pc disco,Pc rota,aowdaowd,pendiente
+130,2020-05-13 20:03:18,falla pc,Jose,disco no toma,pendiente
+131,2020-05-13 20:03:52,MOnitor Roto,Mauricio,arreglar pantalla,pendiente
+132,2020-05-13 20:09:35,owwowols,lawdo ladw,oeoeoeoeeo,pendiente
+133,2020-05-13 20:09:44,falla,JOse,pepepe,resuelto
+134,2020-05-13 20:09:57,waiwaei,fafalaw,pqwqweqo,en procesamiento
+135,2020-05-13 20:21:29,aldwado lawd,oawaowd oeoe,aowdo lele,pendiente
+136,2020-05-13 20:22:03,alwdo lawd,fafaowadl,oeeoeoeoe,en procesamiento
+137,2020-05-13 20:23:02,eoeoeoe aowdo,oawdaldwaoadw,descritpwado fallawdoadwl,pendiente
+138,2020-05-13 20:23:53,oafwoad,jajaautor,esta pc se falla en todos lados,en procesamiento
+139,2020-05-13 20:24:47,probandoawdowao,server2,falla ups,en procesamiento
+140,2020-05-13 20:27:56,oeoeoeeo titual,oawdlawdo,awdoawdo,pendiente
+141,2020-05-13 20:33:27,elele,owowwo,awdo,pendiente
+142,2020-05-13 20:48:08,aowdoawd,oawdoawlran,oeoeeoeo,pendiente
+143,2020-05-14 09:00:02,owowo,Manael,lwlwlw,pendiente
+144,2020-05-14 09:04:14,sss,wwwdaw,awdaw,pendiente
+145,2020-05-14 09:06:30,lawod,flawo,eoeoe,pendiente
+146,2020-05-14 09:09:36,oawodw,term1,eoeoe,pendiente
+147,2020-05-14 09:21:24,owoww,awdawd,qqwqw,pendiente
+148,2020-05-14 09:24:28,soso,qwqwof,faaa,en procesamiento
+149,2020-05-14 09:26:40,PC rota,fawlwado,se rompio por que se fue alv,pendiente
+150,2020-05-14 09:30:00,eee leoadel,awdawd,oawdol alwdo lawdoawela law,pendiente
+151,2020-05-14 09:30:22,oawdl titple,Jose,falla servidor no se por que,en procesamiento
+152,2020-05-14 09:33:01,oeeee,oawldao,peoqawdo,pendiente
+153,2020-05-14 10:11:31,lawdo,awd,leado,pendiente
+154,2020-05-14 10:11:40,peadmo,oawdl,oeoel,pendiente
+155,2020-05-14 10:13:16,lawdo,oawdl,ledao,pendiente
+156,2020-05-14 10:16:13,oaeol,awdadw,aowdl,pendiente
+157,2020-05-14 10:21:15,lawdo,oawld,leo,pendiente
+158,2020-05-14 10:26:41,alwdawo,oqwlwqe,eawdmawdi,pendiente
+159,2020-05-14 10:32:53,fwlao,Jose,awo lawdoawdlawdo lawdo,pendiente
+160,2020-05-14 10:42:53,lawdlawdo,aowdald,oeoeadl oawdl,pendiente
+161,2020-05-14 10:52:45,bbb,aaa,ccc,pendiente
+162,2020-05-14 11:00:32,iawdik,oawdak lawd,lawdo lawdo,pendiente
+163,2020-05-14 11:30:53,awdle,awsfe,oawdl,pendiente
+164,2020-05-14 11:33:53,laedi,oawdo,lalalal,pendiente
+165,2020-05-14 11:36:45,lwlwwlwl,wowoadw,aowdo lawdoawdo wwww,pendiente
+166,2020-05-14 11:37:03,falla pc,Jose,teclado roto,en procesamiento
+167,2020-05-14 11:41:24,lwadl,iwadksx,eeoeoe,pendiente
+168,2020-05-14 19:02:57,lele,oawld,owadoawdl,pendiente
+169,2020-05-14 21:12:05,PC rota,Gloria,no anda el internet,pendiente
+170,2020-05-15 09:36:51,lawdod,awodalwd,oawdlle,pendiente
+171,2020-05-15 09:37:03,leoeawd,qqq,falla falla,en procesamiento
+172,2020-05-15 09:37:33,lawdoawdl lawd,aaa,awowdl oawdawlloalwd awdlwl,resuelto
+173,2020-05-15 09:37:49,PC falla,Jose,falla disco mal,pendiente
+174,2020-05-15 10:32:20,oawdlawdo,aawdaw,iawidawdl oawdlawo alwd,pendiente
+175,2020-05-15 10:32:37,oeeoo title,asdfoawldo alwdo,esto es una descripcion irwad,en procesamiento
+176,2020-05-15 10:32:56,wasdfgh,qwertyui,asdfglwsao awld awod  lawo a,resuelto
+177,2020-05-15 10:33:37,randomtitle,Randomname,pc rota,pendiente
+178,2020-05-15 10:33:48,alwdo,oawl,leo,pendiente

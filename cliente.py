@@ -26,17 +26,19 @@ if __name__ == "__main__":
     except ConnectionRefusedError:
         print("¡Fallo en la conexion!, revise su configuracion e intente nuevamente.")
         sys.exit(1)
-
     print('Socket conectado al host', host, 'en el puerto', port)
     print(
         "\t\t\tComandos Disponibles\n\t--insertar/-i\n\t--listar/-l\n\t--editar/-e nro_ticket\n\t--exportar/-x\n\tUtilizar:\n\t\t\t-a nombre_autor\n\t\t\t-d estado\n\t\t\t-f fecha(DD-MM-YYYY)\n\tAgregandolo a listar (para filtrar) o a exportar\n\t--clear/-c\n\t--salir/-s\n")
     while True:
-
+        sys.stdout.flush()
+        sys.stdin.flush()
         entrada = input('>>> ')
 
         opcion, test = validar_comando(entrada.lower())
         print(f"OPCION ES {opcion}")
-        client_socket.send(opcion.encode('ascii'))
+
+        n=client_socket.send(opcion.encode('ascii'))
+        print(f"PASE EL SEND OPCION! ENVIE {n} BYTES")
         if (opcion == 'INSERTAR' and test is True):
 
             sys.stdin.flush()  # debemos limpiar el buffer
@@ -52,14 +54,14 @@ if __name__ == "__main__":
             json_data = json.dumps(data)  # Convertimos el diccionario a JSON
             #client_socket.send(str(len(json_data)).encode())
             client_socket.send(json_data.encode())
-            print(client_socket.recv(1024).decode())  # Mensaje de feedback satisfactorio.
+            print(client_socket.recv(36).decode())  # Mensaje de feedback satisfactorio.
         elif (opcion == 'LISTAR' and test is True):
-            total_paginas = int(client_socket.recv(1024).decode())
+            total_paginas = int(client_socket.recv(5).decode('ascii'))
             control = "-s"
             num_pagina = -1
             while control == "-s":
                 num_pagina += 1
-                tickets = client_socket.recv(2000).decode()
+                tickets = client_socket.recv(2000).decode('ascii')
                 dict_tickets = json.loads(tickets)
                 for k, v in dict_tickets.items():
                     for key, value in v.items():
@@ -75,7 +77,8 @@ if __name__ == "__main__":
         elif (opcion == 'FILTRAR' and test is not None):
 
             client_socket.send(json.dumps(test).encode('ascii'))
-
+            if control_filtro(test):
+                continue
             total_paginas = int(client_socket.recv(1024).decode())
             control = "-s"
             num_pagina = -1
