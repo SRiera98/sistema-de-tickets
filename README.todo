@@ -1,0 +1,21 @@
+                                  Posibles mejoras y nuevas características
+
+Las posibles mejoras y nuevas características que podrian llegar a introducirse en el proyecto en
+futuras versiones son:
+
+1) Implementar una arquitectura REST para que de esta manera la aplicación tenga la posibilidad
+   en un futuro de estar abierta a posibles cambios como seria el caso de la realización de un
+   Front-End para que pueda interactuar el cliente.
+
+2) Implementar la funcionalidad de borrar Tickets.
+
+3) Poder listar/filtrar Tickets con la posibilidad de ordenarlos por la fecha de creacíon tanto de
+   forma ascendente como descendente.
+
+4) Poder filtrar los tickets con argumentos de opciones múltiples. Por ejemplo: algo como
+   --listar -d pendiente,"en procesamiento" traeria los tickets cuyo estado son "en procesamiento"
+   y ademas traeria los pendientes. Esto seria valido para cualquier otro filtro que pueda llegar
+   a admitir argumentos múltiples.
+
+5) Poder filtrar tickets con un rango de fecha especifico. Por ej.: --listar -f 05-05-2020,15-06-2020
+   traeria los tickets cuya fecha esta entre 05-05-2020 y 15-06-2020.

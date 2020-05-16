@@ -1,12 +1,11 @@
 import json
-import pickle
 import socket
 import sys
 import time
-from funciones_generales import validar_comando, control_ejecucion, control_longitud_filtro, procesamiento_csv, \
-    control_filtro, control_creacion_ticket
+from funciones_generales import validar_comando, control_ejecucion, procesamiento_csv, \
+    control_filtro
 from modelo import Ticket
-from validaciones import validar_estado, clear_screen, validar_fecha
+from validaciones import validar_estado, clear_screen
 
 if __name__ == "__main__":
 
@@ -27,14 +26,13 @@ if __name__ == "__main__":
         print("¡La IP ingresada es invalida!")
         sys.exit(1)
     except OverflowError:
-        print("¡El puerto ingresado es invalido, recuerde (el puerto debe ser entre 0-65535)!")
+        print("El puerto ingresado es invalido, recuerde: ¡el puerto debe estar entre 0-65535!")
         sys.exit(1)
     except ConnectionRefusedError:
         print("¡Fallo en la conexion!, revise su configuracion e intente nuevamente.")
         sys.exit(1)
     print('Socket conectado al host', host, 'en el puerto', port)
-    print(
-        "\t\t\tComandos Disponibles\n\t--insertar/-i\n\t--listar/-l\n\t--editar/-e nro_ticket\n\t--exportar/-x\n\tUtilizar:\n\t\t\t-a nombre_autor\n\t\t\t-d estado\n\t\t\t-f fecha(DD-MM-YYYY)\n\tAgregandolo a listar (para filtrar) o a exportar\n\t--clear/-c\n\t--salir/-s\n")
+    print("\t\t\tComandos Disponibles\n\t--insertar/-i\n\t--listar/-l\n\t--editar/-e nro_ticket\n\t--exportar/-x\n\tUtilizar:\n\t\t\t-a nombre_autor\n\t\t\t-d estado\n\t\t\t-f fecha(DD-MM-YYYY)\n\tAgregandolo a listar (para filtrar) o a exportar\n\t--clear/-c\n\t--salir/-s\n")
     while True:
         sys.stdout.flush()
         sys.stdin.flush()
@@ -42,11 +40,8 @@ if __name__ == "__main__":
         entrada = input('>>> ')
 
         opcion, test = validar_comando(entrada.lower())
-        print(f"OPCION ES {opcion}")
 
-        n=client_socket.send(opcion.encode('ascii'))
-        print(f"PASE EL SEND OPCION! ENVIE {n} BYTES")
-
+        client_socket.send(opcion.encode('ascii'))
 
         if (opcion == 'INSERTAR' and test is True):
 
@@ -130,7 +125,6 @@ if __name__ == "__main__":
             print(mensaje_exito)
 
         elif (opcion == 'LIMPIAR' and test is True):
-            print("ENTRO ACA EN LIMPIAR")
             clear_screen()
 
         elif (opcion == "EXPORTAR" and (test is True or test is not None)):
@@ -140,13 +134,12 @@ if __name__ == "__main__":
             total_paginas = int(client_socket.recv(5).decode('ascii'))
             num_pagina=-1
             lista_tickets = list()
-            print(f"TOTAL DE PAGINAS {total_paginas}")
             while True:
                 num_pagina+=1
                 datos=client_socket.recv(2000).decode('ascii')
                 tickets=json.loads(datos)
                 if len(tickets) == 0 and num_pagina == 0:
-                    print("¡No hay resultados para esa busqueda!")
+                    print("¡No hay resultados para esa búsqueda!")
                     break
                 for k,v in tickets.items():
                     lista_tickets.append(Ticket(ticketId=v["ticketId"], fecha=v["fecha"], titulo=v["titulo"], autor=v["autor"], descripcion=v["descripcion"], estado=v["estado"]))

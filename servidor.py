@@ -1,31 +1,28 @@
 #!/usr/bin/python3
 import json
+import math
 import os
 import socket
-import threading
 import sys
+import threading
 import time
 from datetime import datetime
 from getopt import getopt, GetoptError
 from multiprocessing import Lock
-from threading import Thread, BoundedSemaphore,Semaphore
+from threading import Thread, Semaphore
 from filtro import aplicar_filtro
 from funciones_DB import guardar_ticket, listar_tickets
-from funciones_generales import menu_edicion, procesamiento_csv, control_filtro, control_longitud_filtro
+from funciones_generales import menu_edicion, control_filtro
 from modelo import MyEncoder, Ticket
 from run_DB import session
 from validaciones import logger, validar_numero
-import math
 
 
 def thread_fuction(port, sock, lista_clientes, lock,semaforo):
     while True:
         sys.stdout.flush()
         sys.stdin.flush()
-        print(f"AL ENTRAR LA LISTA ES {lista_clientes}")
-        # print(f"THREAD {threading.currentThread().getName()} {threading.currentThread().isAlive()}\n\n")
-        # print(f"SOY LA PRIMERA LINEA DEL WHILE TRUE SERVIDOR! - THREAD {threading.currentThread().getName()}")
-        msg = sock.recv(12)
+        msg = sock.recv(12) # Recibimos la opción dada por el socket cliente.
         print(f"OPCION ES {msg.decode('ascii')} LONGITUD {len(msg.decode('ascii'))} THREAD {threading.currentThread().getName()}")
         print(f"Recibido  del puerto {port} atendido por PID {os.getpid()}:  {msg.decode('ascii')}")
         logger(sock, msg)  # logger para almacenar comandos realizados.
@@ -136,7 +133,6 @@ def thread_fuction(port, sock, lista_clientes, lock,semaforo):
             test = json.loads(sock.recv(1024).decode('ascii'))  # Recivimos filtros o boolean lista completa.
             if control_filtro(test):
                 continue
-            print(f"VALOR TEST {test}")
             if test is True:
                 lista_tickets = listar_tickets()
                 total_paginas = math.ceil(len(lista_tickets) / 10)  # dividimos el total de tickets por la cantidad de paginas
@@ -169,12 +165,10 @@ def thread_fuction(port, sock, lista_clientes, lock,semaforo):
             for cliente in lista_clientes:
                 if cliente == sock:
                     lista_clientes.remove(cliente)
-            print("AL SALIR LISTA ES:\n")
-            print(lista_clientes)
             break
 
         else:
-            print('\nOpcion invalida!\n')
+            print('\n¡Opcion inválida!\n')
 
 
 if __name__ == "__main__":
@@ -202,6 +196,9 @@ if __name__ == "__main__":
         serversocket.bind((host, port))
     except NameError:
         print("Nunca se especifico el puerto!")
+        sys.exit(1)
+    except OverflowError:
+        print("El puerto ingresado es invalido, recuerde: ¡el puerto debe estar entre 0-65535!")
         sys.exit(1)
     # Establecemos 5 peticiones de escucha como maximo.
     serversocket.listen(5)
