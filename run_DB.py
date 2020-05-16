@@ -1,9 +1,10 @@
 from modelo import Base
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from os import getenv
 from dotenv import load_dotenv
-load_dotenv()#Cargamos las variables del entorno.
+
+load_dotenv()  # Parsea el archivo .env y luego carga todas sus variables como variables de entorno.
 
 # Configuramos motor de BD
 engine = create_engine(f"mysql+pymysql://{getenv('DB_USERNAME')}:{getenv('DB_PASS')}@192.168.0.106/{getenv('DB_NAME')}")
@@ -16,4 +17,3 @@ Session = sessionmaker(bind=engine)
 
 # Creamos la sesion, nos permite el manejo de la BD.
 session = Session()
-

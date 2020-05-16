@@ -4,7 +4,7 @@ import socket
 import sys
 import time
 from funciones_generales import validar_comando, control_ejecucion, control_longitud_filtro, procesamiento_csv, \
-    control_filtro
+    control_filtro, control_creacion_ticket
 from modelo import Ticket
 from validaciones import validar_estado, clear_screen, validar_fecha
 
@@ -23,6 +23,12 @@ if __name__ == "__main__":
     except NameError:
         print("Nunca se especifico el puerto o host!")
         sys.exit(1)
+    except TypeError:
+        print("¡La IP ingresada es invalida!")
+        sys.exit(1)
+    except OverflowError:
+        print("¡El puerto ingresado es invalido, recuerde (el puerto debe ser entre 0-65535)!")
+        sys.exit(1)
     except ConnectionRefusedError:
         print("¡Fallo en la conexion!, revise su configuracion e intente nuevamente.")
         sys.exit(1)
@@ -32,6 +38,7 @@ if __name__ == "__main__":
     while True:
         sys.stdout.flush()
         sys.stdin.flush()
+        #control_creacion_ticket(client_socket)
         entrada = input('>>> ')
 
         opcion, test = validar_comando(entrada.lower())
@@ -39,6 +46,8 @@ if __name__ == "__main__":
 
         n=client_socket.send(opcion.encode('ascii'))
         print(f"PASE EL SEND OPCION! ENVIE {n} BYTES")
+
+
         if (opcion == 'INSERTAR' and test is True):
 
             sys.stdin.flush()  # debemos limpiar el buffer
@@ -103,6 +112,7 @@ if __name__ == "__main__":
         elif (opcion == 'EDITAR' and test is not None):
             if test is False:
                 continue
+            time.sleep(0.02)
             client_socket.send(test.encode('ascii'))  # Envio ID ticket al servidor
             menu = client_socket.recv(1024).decode()  # Recibo el Menu desde el metodo menu_edicion
             print(menu)
@@ -115,7 +125,7 @@ if __name__ == "__main__":
             if edit_option == '2':
                 while validar_estado(nuevo_dato):
                     nuevo_dato = input("El estado es incorrecto, intentelo nuevamente: ")
-            client_socket.send(nuevo_dato.encode('ascii'))  # Enviamos nuevo dato.
+            client_socket.send(nuevo_dato.encode())  # Enviamos nuevo dato.
             mensaje_exito = client_socket.recv(1024).decode()
             print(mensaje_exito)
 
@@ -127,13 +137,26 @@ if __name__ == "__main__":
             client_socket.send(json.dumps(test).encode('ascii'))  # Mandamos datos de filtro o  Boolean lista compelta
             if control_filtro(test):
                 continue
-            longitud=control_longitud_filtro(client_socket.recv(5).decode())
-            datos=client_socket.recv(int(longitud)).decode()
-            tickets=json.loads(datos)
-            lista_tickets= list()
-            for k,v in tickets.items():
-                lista_tickets.append(Ticket(ticketId=v["ticketId"], fecha=v["fecha"], titulo=v["titulo"], autor=v["autor"], descripcion=v["descripcion"], estado=v["estado"]))
-            procesamiento_csv(lista_tickets)
+            total_paginas = int(client_socket.recv(5).decode('ascii'))
+            num_pagina=-1
+            lista_tickets = list()
+            print(f"TOTAL DE PAGINAS {total_paginas}")
+            while True:
+                num_pagina+=1
+                datos=client_socket.recv(2000).decode('ascii')
+                tickets=json.loads(datos)
+                if len(tickets) == 0 and num_pagina == 0:
+                    print("¡No hay resultados para esa busqueda!")
+                    break
+                for k,v in tickets.items():
+                    lista_tickets.append(Ticket(ticketId=v["ticketId"], fecha=v["fecha"], titulo=v["titulo"], autor=v["autor"], descripcion=v["descripcion"], estado=v["estado"]))
+                if num_pagina == total_paginas:
+                    break
+            if len(lista_tickets)>0:
+                procesamiento_csv(lista_tickets)
+            mensaje_exito = client_socket.recv(36).decode()
+            print(mensaje_exito)
+
         elif (opcion == "SALIR" and test is True):
             client_socket.close()
             break

@@ -1,0 +1,39 @@
+                                             Base de Datos
+En el caso de la BD, se estableció que lo más conveniente era un BD del tipo SQL, la cual fue MySQL.
+Esto es debido a que las BD del tipo SQL primero que nada son las mas utilizadas por la comunidad de desarrolladores
+por su facilidad de uso, segundo por la gran cantidad de documentación y posibles soluciones que uno puede llegar a
+encontrar a problemas tradicionales que podrian llegar a ocurrir en una BD del tipo SQL. Por ej.:
+Por hacer referencia a StackOverflow, una de las webs de consulta de desarrollo mas populares, podemos observar que
+el tag sql tiene un aproximado de 54200 entradas, mientras que nosql tiene solo 11000.
+Otro aspecto que se tuvo en cuenta es que hay muchas bases de datos NoSQL y aún no hay un estándar como sí
+lo hay en las bases de datos relacionales o tipo SQL.
+Es por esto más que nada que se ha tomado la decisión de utilizar dicha Base de Datos.
+
+                                         La elección de SQLAlchemy
+En el Proyecto se estableció el uso del ORM SQLAlchemy por las siguientes razones:
+* El desarrollo de SQLAlchemy es realizado completamente en Python.
+
+* Abstracción del modelo sin preocuparse del motor de bases de datos a utilizar.
+
+* Los errores en la base de datos se reducen, porque hay 2 capas entre la aplicación y la BD: el propio intérprete
+  de Python, y SQLAlchemy con toda su API definida y preparada para la verificación de errores ya preparada.
+
+* Aplicar ORM, o sea, Object Relational Mapping, un mapeo de objetos relacional, hace que el código sea más fácil
+  y cómodo de mantener, debido a que si no lo utilizaramos, tendriamos riesgos en cuanto a seguridad y problemas
+  de flexibilidad en nuestro proyecto, ya que un pequeño cambio en la Tabla de BD, sin usar ORM, posiblemente nos
+  obligaria a cambiar parte del código de nuestras consultas de BD.
+
+* SQLAlchemy ayuda a evitar vulnerabilidades por injecciones SQL
+
+                                           Manejo Cliente y Servidor
+
+Para poder soportar multiples clientes de forma simultanea, se hizo uso del modulo de python "threading" para poder
+así ir creando hilos (threads) dedicados a cada uno de los sockets cliente.
+
+Por otro lado debemos mensionar que para EXPORTAR Tickets se lanzó un Process o Proceso nuevo que se encargará de
+realizar el trabajo de exportación, es decir, crear el .CSV y almacenarlo en un archivo  comprimido (.ZIP).
+
+                                           Envio de Datos entre Cliente/s y Servidor
+
+En la mayoria de los casos, los datos que se intercambiarion entre cliente y servidor fueron en formato JSON, esto
+sobre todo se utilizó para el envío de datos de tickets, no para envío de simples mensajes de confirmación o similares.

@@ -5,16 +5,12 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 """
-Los clientes que se conecten podrán, mediante comandos definidos por el programador,
-insertar un nuevo ticket, listar los tickets disponibles, y editar el estado de alguno de ellos, y
-su información. El listado de tickets deberá contar con un filtro por fecha, autor y estado.
+Clase que representa la tabla de BD de tickets.
 """
-
-
 class Ticket(Base):
+
     __tablename__ = "tickets"
-    ticketId = Column(Integer,
-                      primary_key=True)  # Column indica que la variable será justamente una columna de la tabla relacional, primary_key: Clave primaria de la tabla para poder relacionarla
+    ticketId = Column(Integer,primary_key=True)  # Column indica que la variable será justamente una columna de la tabla relacional, primary_key: Clave primaria de la tabla para poder relacionarla
     fecha = Column(DateTime, nullable=False)
     titulo = Column(String(60), nullable=False)
     autor = Column(String(60), nullable=False)
@@ -27,7 +23,10 @@ class Ticket(Base):
     def __str__(self):
         return f"Identificador: {self.ticketId}\nTitulo: {self.titulo}\nAutor: {self.autor}\nFecha de Creacion: {self.fecha}\nDescripcion: {self.descripcion}\nEstado: {self.estado}\n\n"
 
-
+"""
+Debido a que JSON de Python permite serializar tipos de datos "tradicionales" de python, se realizo un encoder
+especial para que pueda entender un objeto Ticket.
+"""
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Ticket):

@@ -1,14 +1,12 @@
 import csv as csv_fuctions
 import getopt
+import socket
 import sys
 from datetime import datetime
 from zipfile import ZipFile
 import os
-
-from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename # Modifica el nombre del archivo a uno seguro
 from multiprocessing import Process
-
 from modelo import Ticket
 from run_DB import session
 from validaciones import validar_ticket, validar_numero, validar_ip, validar_fecha, validar_estado
@@ -58,25 +56,24 @@ def menu_edicion(sock,identificador_ticket):
     :param identificador_ticket: ID de un ticket
     :return: Nada
     """
+    sys.stdin.flush()
     ticket_editar = session.query(Ticket).filter(Ticket.ticketId == identificador_ticket).one()
-    print("ANTES DEL MENU")
     sock.send("\t\t¿Que desea editar?\n\t"
                 "1. Editar titulo\n\t"
                 "2. Editar estado\n\t"
                 "3. Editar descripcion\n\t".encode()) #Enviamos al cliente el MENU
     opcion = sock.recv(1024).decode('ascii') #Recibimos la eleccion del cliente.
-    print("DESPUES DEL MENU")
     if int(opcion) == 1:
         sock.send("Ingrese el nuevo titulo a colocar: ".encode('ascii'))
-        nuevo_titulo = sock.recv(1024).decode('ascii')
+        nuevo_titulo = sock.recv(1024).decode()
         ticket_editar.titulo = nuevo_titulo
     elif int(opcion) == 2:
         sock.send("Ingrese el nuevo estado a colocar: ".encode('ascii'))
-        nuevo_estado = sock.recv(1024).decode('ascii')
+        nuevo_estado = sock.recv(1024).decode()
         ticket_editar.estado = nuevo_estado
     elif int(opcion) == 3:
         sock.send("Ingrese la nueva descripcion a colocar: ".encode('ascii'))
-        nueva_descripcion = sock.recv(1024).decode('ascii')
+        nueva_descripcion = sock.recv(1024).decode()
         ticket_editar.descripcion = nueva_descripcion
     session.add(ticket_editar)
     session.commit()
@@ -214,3 +211,18 @@ def control_filtro(test):
     else:
         retorno=False
     return retorno
+
+def control_creacion_ticket(client_socket):
+    try:
+        client_socket.settimeout(0.2)
+        aviso = client_socket.recv(32).decode()
+        if aviso == "¡Se ha creado un nuevo ticket!":
+            print(aviso)
+        else:
+            pass
+
+        client_socket.settimeout(None)
+        client_socket.setblocking(True)  # son lo mismo.
+    except socket.timeout:
+        client_socket.settimeout(None)
+        client_socket.setblocking(True)
