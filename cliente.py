@@ -2,6 +2,8 @@ import json
 import socket
 import sys
 import time
+
+from funciones_cliente import ingresar_ticket
 from funciones_generales import validar_comando, control_ejecucion, procesamiento_csv, \
     control_filtro
 from modelo import Ticket
@@ -45,18 +47,8 @@ if __name__ == "__main__":
 
         if (opcion == 'INSERTAR' and test is True):
 
-            sys.stdin.flush()  # debemos limpiar el buffer
-            autor = input("\nIngrese autor del Ticket: ")
-            titulo = input("\nIngrese titulo del ticket: ")
-            descripcion = input("\nIngrese descripcion del ticket: ")
-            estado = input("\nIngrese estado del ticket (pendiente, en procesamiento o resuelto): ")
-            while validar_estado(estado):
-                estado = input("Estado debe ser uno de los pedidos, intentelo nuevamente: ")
-            data = {"autor": autor, "titulo": titulo, "descripcion": descripcion, "estado": estado}
-            print("DATOS DEL TICKET")
-            print(data)
+            data=ingresar_ticket()
             json_data = json.dumps(data)  # Convertimos el diccionario a JSON
-            #client_socket.send(str(len(json_data)).encode())
             client_socket.send(json_data.encode())
             print(client_socket.recv(36).decode())  # Mensaje de feedback satisfactorio.
         elif (opcion == 'LISTAR' and test is True):
@@ -91,7 +83,7 @@ if __name__ == "__main__":
                 tickets = client_socket.recv(2000).decode()
                 dict_tickets = json.loads(tickets)
                 if len(dict_tickets) == 0 and num_pagina == 0:
-                    print("¡No hay resultados para esa busqueda!")
+                    print("¡No hay resultados para esa búsqueda!")
                     break
                 for k, v in dict_tickets.items():
                     for key, value in v.items():
@@ -109,6 +101,9 @@ if __name__ == "__main__":
                 continue
             time.sleep(0.02)
             client_socket.send(test.encode('ascii'))  # Envio ID ticket al servidor
+            aviso=client_socket.recv(5).decode('ascii')
+            if aviso == 'True':
+                print(client_socket.recv(50).decode()) #Imprimimos aviso de que se esta editando el ticket.
             menu = client_socket.recv(1024).decode()  # Recibo el Menu desde el metodo menu_edicion
             print(menu)
             edit_option = input("Opcion: ")

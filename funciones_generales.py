@@ -179,19 +179,6 @@ def control_ejecucion():
         sys.exit(1)
     return (host,port)
 
-def control_longitud_filtro(longitud):
-    longitud_int=None
-    control = True
-    lista_longitud = list(longitud)
-    while control is True:
-        try:
-            valor = "".join(lista_longitud)
-            longitud_int = int(valor)
-            control = False
-        except ValueError:
-            lista_longitud.pop()
-    return longitud_int
-
 def control_filtro(test):
     """
     :param test: Posible filtro ingresado.
