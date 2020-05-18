@@ -6,12 +6,18 @@ from datetime import datetime
 import json
 from filtro import aplicar_filtro
 from funciones_DB import guardar_ticket
-from funciones_generales import control_filtro, menu_edicion
+from funciones_generales import control_filtro
 from modelo import Ticket, MyEncoder
 from run_DB import session
 
 
 def almacenar_ticket(sock,lock):
+    """
+    Almacena el socket en la BD.
+    :param sock: Objeto socket resultado de una nueva conexion aceptada por el servidor.
+    :param lock: Nos permitirá que la operacion de guardado sea con exclusion mutua.
+    :return: Nada
+    """
     dict_data = sock.recv(1024).decode('ascii')
     final_data = json.loads(dict_data)
     final_data = dict(final_data)
@@ -29,6 +35,12 @@ def almacenar_ticket(sock,lock):
     sock.send("¡Ticket creado correctamente!\n".encode())
 
 def solicitar_tickets(msg,sock):
+    """
+    Se encarga de paginar y enviar los tickets al cliente.
+    :param msg: Representa la opcion del cliente.
+    :param sock: Objeto socket resultado de una nueva conexion aceptada por el servidor.
+    :return: Nada
+    """
     lista_tickets = session.query(Ticket)
     if msg.decode() == 'FILTRAR':
         # Realizo los pasos de filtro previos
@@ -60,35 +72,42 @@ def solicitar_tickets(msg,sock):
             control = sock.recv(4).decode('ascii')
             lista_dict = dict()
 
-def editar_ticket_servidor(sock,lista_ids_edicion,semaforo):
-    identificador_ticket = sock.recv(5).decode('ascii')  # Recibo ID del cliente.
-    lista_ids_edicion.append(identificador_ticket) #Añado a lista de IDs para ver si otros threads eligen editar un mismo ticket.
-    total_tickets = len(lista_ids_edicion) #longitud actual de la lista de IDs de tickets.
-    if total_tickets > 1:
-        if lista_ids_edicion.count(identificador_ticket) > 1:
-            control_aviso = True
-            sock.send(str(control_aviso).encode())
-            sock.send("¡Este ticket esta siendo editado!\nEsperando...".encode())
-            while True:
-                if semaforo.acquire():
-                    menu_edicion(sock, int(identificador_ticket))
-                    lista_ids_edicion.remove(identificador_ticket)
-                    semaforo.release()
-                    break
-        else:
-            control_aviso = False
-            sock.send(str(control_aviso).encode())
-            menu_edicion(sock, int(identificador_ticket))
-            lista_ids_edicion.remove(identificador_ticket)
-    else:
-        semaforo.acquire()
-        control_aviso = False
-        sock.send(str(control_aviso).encode())
-        menu_edicion(sock, int(identificador_ticket))
-        semaforo.release()
-        lista_ids_edicion.remove(identificador_ticket)
+def editar_tickets_servidor(sock,identificador_ticket):
+    """
+    Encargado de la edicion del ticket
+    :param sock: Objeto socket resultado de una nueva conexion aceptada por el servidor.
+    :param identificador_ticket: ID de un ticket
+    :return: Nada
+    """
+    sys.stdin.flush()
+    ticket_editar = session.query(Ticket).filter(Ticket.ticketId == identificador_ticket).one()
+    sock.send("\t\t¿Que desea editar?\n\t"
+                "1. Editar titulo\n\t"
+                "2. Editar estado\n\t"
+                "3. Editar descripcion\n\t".encode()) #Enviamos al cliente el MENU
+    opcion = sock.recv(1024).decode('ascii') #Recibimos la eleccion del cliente.
+    if int(opcion) == 1:
+        sock.send("Ingrese el nuevo titulo a colocar: ".encode('ascii'))
+        nuevo_titulo = sock.recv(1024).decode()
+        ticket_editar.titulo = nuevo_titulo
+    elif int(opcion) == 2:
+        sock.send("Ingrese el nuevo estado a colocar: ".encode('ascii'))
+        nuevo_estado = sock.recv(1024).decode()
+        ticket_editar.estado = nuevo_estado
+    elif int(opcion) == 3:
+        sock.send("Ingrese la nueva descripcion a colocar: ".encode('ascii'))
+        nueva_descripcion = sock.recv(1024).decode()
+        ticket_editar.descripcion = nueva_descripcion
+    session.add(ticket_editar)
+    session.commit()
+    sock.send("¡Ticket Editado con Exito!\n".encode())
 
 def exportar_tickets_servidor(sock):
+    """
+    Se encarga de paginar y enviar al cliente los tickets a exportar.
+    :param sock: Objeto socket resultado de una nueva conexion aceptada por el servidor.
+    :return: Nada
+    """
     test = json.loads(sock.recv(1024).decode('ascii'))  # Recibimos filtros o boolean lista completa.
     if control_filtro(test):
         return False
@@ -119,6 +138,12 @@ def exportar_tickets_servidor(sock):
 
 
 def configurar_servidor(host,port):
+    """
+    Configura y devuelve un socket destinado a ser servidor.
+    :param host: IP o alias al cual se iniciara el socket.
+    :param port: Puerto que va a utilizar el socket.
+    :return: Objeto socket configurado.
+    """
     # creamos el objeto socket
     try:
 

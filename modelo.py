@@ -24,8 +24,8 @@ class Ticket(Base):
         return f"Identificador: {self.ticketId}\nTitulo: {self.titulo}\nAutor: {self.autor}\nFecha de Creacion: {self.fecha}\nDescripcion: {self.descripcion}\nEstado: {self.estado}\n\n"
 
 """
-Debido a que JSON de Python permite serializar tipos de datos "tradicionales" de python, se realizo un encoder
-especial para que pueda entender un objeto Ticket.
+Debido a que JSON de Python permite serializar tipos de datos "tradicionales" de python, se realizó un 
+encoder especial para que pueda entender un objeto Ticket.
 """
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):

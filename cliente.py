@@ -18,7 +18,7 @@ if __name__ == "__main__":
     while True:
         sys.stdout.flush()
         sys.stdin.flush()
-        #control_creacion_ticket(client_socket)
+
         entrada = input('>>> ')
 
         opcion, test = validar_comando(entrada.lower())
@@ -51,5 +51,5 @@ if __name__ == "__main__":
             break
 
         else:
-            print('\nOpcion invalida!\n')
+            print('\n¡Opcion inválida!\n')
             input('Apretar Enter...')

@@ -4,10 +4,10 @@ import socket
 import sys
 import threading
 from multiprocessing import Lock
-from threading import Thread, Semaphore
-from funciones_generales import control_ejecucion_servidor, menu_edicion
+from threading import Thread
+from funciones_generales import control_ejecucion_servidor
 from funciones_servidor import almacenar_ticket, solicitar_tickets, configurar_servidor, \
-    exportar_tickets_servidor
+    exportar_tickets_servidor,editar_tickets_servidor
 from validaciones import logger
 
 
@@ -33,7 +33,7 @@ def thread_fuction(port, sock, lista_clientes, lock):
             identificador_ticket = sock.recv(5).decode('ascii')  # Recibo ID del cliente.
             if identificador_ticket == 'False':
                 continue
-            menu_edicion(sock, int(identificador_ticket))
+            editar_tickets_servidor(sock, int(identificador_ticket))
 
         elif (msg.decode() == "LIMPIAR"):
             pass

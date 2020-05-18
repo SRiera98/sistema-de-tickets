@@ -1,13 +1,17 @@
 import socket
 import sys
 import time
-
 from funciones_generales import control_filtro, procesamiento_csv
 from modelo import Ticket
 from validaciones import validar_estado
 import json
 
 def ingresar_ticket(client_socket):
+    """
+    Toma los datos para crear un nuevo ticket, enviando un json al servidor.
+    :param client_socket: socket que representa el cliente.
+    :return: Nada
+    """
     sys.stdin.flush()  # debemos limpiar el buffer
     autor = input("\nIngrese autor del Ticket: ")
     titulo = input("\nIngrese titulo del ticket: ")
@@ -20,10 +24,16 @@ def ingresar_ticket(client_socket):
     client_socket.send(json_data.encode())
     print(client_socket.recv(36).decode())  # Mensaje de feedback satisfactorio.
 
-"""
-Metodo que abarca tanto el filtrado como la lista completa de tickets.
-"""
+
 def consultar_tickets(client_socket,opcion,test):
+    """
+    Metodo que abarca tanto el filtrado como la lista completa de tickets.
+    :param client_socket: socket que representa el cliente.
+    :param opcion: La cual fue elegida por el cliente.
+    :param test: Puede ser True en caso de la lista completa, o un diccionario
+                 que contiene los filtros a aplicar.
+    :return: Nada
+    """
     if opcion == 'FILTRAR':
         time.sleep(0.02)
         client_socket.send(json.dumps(test).encode('ascii'))
@@ -51,6 +61,12 @@ def consultar_tickets(client_socket,opcion,test):
         client_socket.send(control.encode('ascii'))
 
 def editar_ticket_cliente(test,client_socket):
+    """
+    Toma los parametros del ticket a editar y los envia al servidor.
+    :param test: ID del ticket a editar o False
+    :param client_socket: socket que representa el cliente.
+    :return: Nada
+    """
     time.sleep(0.05)
     client_socket.send(str(test).encode('ascii'))  # Envio ID ticket al servidor
     if test is False:
@@ -71,6 +87,12 @@ def editar_ticket_cliente(test,client_socket):
     print(mensaje_exito)
 
 def exportar_tickets_cliente(client_socket,test):
+    """
+    Se encarga de recibir y exportar los tickets mediante un proceso.
+    :param client_socket: socket que representa el cliente.
+    :param test: Diccionario con filtro o True.
+    :return: Nada
+    """
     time.sleep(0.05)
     client_socket.send(json.dumps(test).encode('ascii'))  # Mandamos datos de filtro o  Boolean lista compelta
     if control_filtro(test):
@@ -96,6 +118,12 @@ def exportar_tickets_cliente(client_socket,test):
         print(mensaje_exito)
 
 def configurar_cliente(host,port):
+    """
+    Configura y devuelve un socket destinado a ser cliente.
+    :param host: IP o alias al cual el socket se conectará
+    :param port: Puerto al cual el socket se conectará
+    :return: Objeto socket configurado.
+    """
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error:

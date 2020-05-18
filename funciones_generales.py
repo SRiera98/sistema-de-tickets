@@ -1,6 +1,5 @@
 import csv as csv_fuctions
 import getopt
-import socket
 import sys
 from datetime import datetime
 from zipfile import ZipFile
@@ -49,42 +48,11 @@ def procesamiento_csv(tickets):
     proceso=Process(target=csv_manager,args=(tickets,))
     proceso.start()
 
-def menu_edicion(sock,identificador_ticket):
-    """
-    Encargado de la edicion del ticket
-    :param sock: socket que representa un cliente.
-    :param identificador_ticket: ID de un ticket
-    :return: Nada
-    """
-    sys.stdin.flush()
-    ticket_editar = session.query(Ticket).filter(Ticket.ticketId == identificador_ticket).one()
-    sock.send("\t\t¿Que desea editar?\n\t"
-                "1. Editar titulo\n\t"
-                "2. Editar estado\n\t"
-                "3. Editar descripcion\n\t".encode()) #Enviamos al cliente el MENU
-    opcion = sock.recv(1024).decode('ascii') #Recibimos la eleccion del cliente.
-    if int(opcion) == 1:
-        sock.send("Ingrese el nuevo titulo a colocar: ".encode('ascii'))
-        nuevo_titulo = sock.recv(1024).decode()
-        ticket_editar.titulo = nuevo_titulo
-    elif int(opcion) == 2:
-        sock.send("Ingrese el nuevo estado a colocar: ".encode('ascii'))
-        nuevo_estado = sock.recv(1024).decode()
-        ticket_editar.estado = nuevo_estado
-    elif int(opcion) == 3:
-        sock.send("Ingrese la nueva descripcion a colocar: ".encode('ascii'))
-        nueva_descripcion = sock.recv(1024).decode()
-        ticket_editar.descripcion = nueva_descripcion
-    session.add(ticket_editar)
-    session.commit()
-    sock.send("¡Ticket Editado con Exito!\n".encode())
-
-
 def parsear_comando(cadena):
     """
     Se encarga de controlar el caso especial cuando tenemos que pasar como opcion de comando el estado "en procesamiento"
     :param cadena: El comando ingresado por el usuario, que se utilizara en validar_comando
-    :return: Array de String que podra ser procesado por GetOpt.
+    :return: Array de String que podrá ser procesado por GetOpt.
     """
     array_comando = []
     array_auxiliar= []
@@ -106,8 +74,9 @@ def parsear_comando(cadena):
 def validar_comando(cadena):
     """
     Se encarga de validar el comando ingresado por el cliente mediante GetOpt.
-    :param cadena: El comando.
-    :return: Una tupla cuyo primer valor es un String de la Opción ingresada, el segundo es un un Boolean o un Filtro.
+    :param cadena: String que representa el comando.
+    :return: Una tupla cuyo primer valor es un String de la Opción ingresada, el segundo
+             es un un Boolean o un Filtro.
     """
     retorno=('None',False)
     array_comando = parsear_comando(cadena)
@@ -179,6 +148,10 @@ def controlar_ejecucion_cliente():
     return (host,port)
 
 def control_ejecucion_servidor():
+    """
+    Se encarga de parsear los parametros pasados al momento de iniciar el servidor.
+    :return: El puerto que ocupará el socket.
+    """
     # Establecemos host y puerto.
     port = None
     try:
@@ -210,18 +183,3 @@ def control_filtro(test):
     else:
         retorno=False
     return retorno
-
-def control_creacion_ticket(client_socket):
-    try:
-        client_socket.settimeout(0.2)
-        aviso = client_socket.recv(32).decode()
-        if aviso == "¡Se ha creado un nuevo ticket!":
-            print(aviso)
-        else:
-            pass
-
-        client_socket.settimeout(None)
-        client_socket.setblocking(True)  # son lo mismo.
-    except socket.timeout:
-        client_socket.settimeout(None)
-        client_socket.setblocking(True)
