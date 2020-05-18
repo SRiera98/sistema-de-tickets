@@ -72,7 +72,7 @@ def logger(sock, msg):
         with open("log", "a+") as file:
             ip, port = sock.getpeername()
             fecha = datetime.now().strftime("%d-%m-%Y %H h:%M min:%S seg")
-            file.write(f"Dirección IP Cliente: {ip} - Fecha: {fecha} - Operacion ejecutada: {msg.decode()}\n")
+            file.write(f"Dirección IP Cliente: {ip} - Fecha: {fecha} - Operacion ejecutada: {msg.decode()},\n")
 
 
 def clear_screen():

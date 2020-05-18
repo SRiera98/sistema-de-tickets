@@ -158,9 +158,8 @@ def validar_comando(cadena):
 
     except getopt.GetoptError as e:
         print("Error en el comando ingresado, por favor, revise su sintaxis e ingreselo nuevamente.")
-    print(f"EL RETORNO ES {retorno}")
     return retorno
-def control_ejecucion():
+def controlar_ejecucion_cliente():
     """
     Se encarga de parsear los parametros pasados al momento de iniciar el cliente.
     :return: El host y el puerto con el cual el socket se conectará.
@@ -178,6 +177,19 @@ def control_ejecucion():
         print("¡Debe especificar el host y puerto!")
         sys.exit(1)
     return (host,port)
+
+def control_ejecucion_servidor():
+    # Establecemos host y puerto.
+    port = None
+    try:
+        (opt, arg) = getopt.getopt(sys.argv[1:], 'p:', ["puerto="])
+        for opcion, valor in opt:
+            if opcion in ("-p", "--puerto") and validar_numero(valor) is True:
+                port = int(valor)
+    except getopt.GetoptError as e:
+        print("La estructura de comando es incorrecta.")
+        sys.exit(1)
+    return port
 
 def control_filtro(test):
     """
