@@ -19,3 +19,11 @@ futuras versiones son:
 
 5) Poder filtrar tickets con un rango de fecha especifico. Por ej.: --listar -f 05-05-2020,15-06-2020
    traeria los tickets cuya fecha esta entre 05-05-2020 y 15-06-2020.
+
+6) Al momento de exportar un ticket, que el usuario tenga la posibilidad de elegir que nombre tendrá
+   su archivo de tickets exportado, es decir, tener la posibilidad de elegir el nombre del .ZIP.
+
+7) Implementar mecanismos de sincronismo a la hora de editar un ticket, no permitiendo asi que un cliente
+   edite un ticket que actualmente esta siendo editado.
+
+8) Avisarle a los clientes conectados que determinado cliente creo un Ticket nuevo.

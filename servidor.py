@@ -11,7 +11,7 @@ from funciones_servidor import almacenar_ticket, solicitar_tickets, configurar_s
 from validaciones import logger
 
 
-def thread_fuction(port, sock, lista_clientes, lock):
+def thread_fuction(port, sock, lock):
     while True:
         sys.stdout.flush()
         sys.stdin.flush()
@@ -43,9 +43,6 @@ def thread_fuction(port, sock, lista_clientes, lock):
                 continue
 
         elif (msg.decode() == "SALIR"):
-            for cliente in lista_clientes:
-                if cliente == sock:
-                    lista_clientes.remove(cliente)
             break
 
         else:
@@ -55,22 +52,17 @@ def thread_fuction(port, sock, lista_clientes, lock):
 if __name__ == "__main__":
     # Definimos el host y el puerto a utilizar.
     port=control_ejecucion_servidor()
-    host = '0.0.0.0' # Con esta IP especificamos todas las Direcciones IPv4 en la maquina Local.
+    host = '0.0.0.0' # El socket atenderá en todas las Direcciones IP locales.
 
     # Llamamos al metodo que configura el servidor y devuelve el socket.
     serversocket=configurar_servidor(host,port)
 
-    lista_clientes = list()  # Lista que tiene los clientes actuales.
-    lista_ids_edicion = list() # lista que contiene los IDs para controlar la edicion de tickets
     lock = Lock() # Lock para lograr que la creacion de tickets sea de uno a la vez.
     i = 0 # Solo para darle un nombre al thread.
     while True:
         # Establecemos la conexion
         clientsocket, addr = serversocket.accept()
-        if clientsocket:
-            lista_clientes.append(clientsocket)
-
         i += 1
         print(f'¡Conexion de Cliente {i} establecida!')
-        conection = Thread(name=f"Cliente {i}", target=thread_fuction, args=(port, clientsocket, lista_clientes, lock))
+        conection = Thread(name=f"Cliente {i}", target=thread_fuction, args=(port, clientsocket, lock))
         conection.start()

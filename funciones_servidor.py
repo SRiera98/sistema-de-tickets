@@ -20,16 +20,10 @@ def almacenar_ticket(sock,lock):
     """
     dict_data = sock.recv(1024).decode('ascii')
     final_data = json.loads(dict_data)
-    final_data = dict(final_data)
-    for key, value in final_data.items():
-        if key == "autor":
-            autor = value
-        elif key == "titulo":
-            titulo = value
-        elif key == "descripcion":
-            descripcion = value
-        elif key == "estado":
-            estado = value
+    autor = final_data["autor"]
+    titulo = final_data["titulo"]
+    descripcion = final_data["descripcion"]
+    estado = final_data["estado"]
     with lock:
         guardar_ticket(autor, titulo, descripcion, estado, fecha=datetime.now())
     sock.send("¡Ticket creado correctamente!\n".encode())
@@ -164,6 +158,6 @@ def configurar_servidor(host,port):
     except OverflowError:
         print("El puerto ingresado es invalido, recuerde: ¡el puerto debe estar entre 0-65535!")
         sys.exit(1)
-    # Establecemos un backlog de 5 peticiones de espera de conexion como maximo.
+    # Establecemos un backlog de 5 peticiones de espera de conexion simultaneas como maximo.
     serversocket.listen(5)
     return serversocket

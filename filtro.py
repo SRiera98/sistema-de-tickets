@@ -1,7 +1,6 @@
 from sqlalchemy import func as sql_recursos
 from datetime import datetime
 from modelo import Ticket
-from validaciones import validar_fecha, validar_estado
 
 def filtrar_fecha(lista_tickets,fecha):
     """
@@ -10,10 +9,7 @@ def filtrar_fecha(lista_tickets,fecha):
     :param fecha: String que representa una fecha ingresada por el cliente.
     :return: lista de tickets ya filtrada.
     """
-    if validar_fecha(fecha):
-        fecha = datetime.strptime(fecha, "%d-%m-%Y").date()
-    else:
-        print("Formato de fecha incorrecto, ejecute correctamente el comando ")
+    fecha = datetime.strptime(fecha, "%d-%m-%Y").date()
     lista_tickets = lista_tickets.filter(Ticket.fecha.like(str(fecha) + "%"))
     return lista_tickets
 
@@ -34,10 +30,7 @@ def filtrar_estado(lista_tickets,estado):
     :param estado: String que representa el estado.
     :return: lista de tickets filtrada.
     """
-    if validar_estado(estado):
-        print("Error en el estado ingresado, ejecute nuevamente\n")
-    else:
-        lista_tickets = lista_tickets.filter(Ticket.estado == estado)
+    lista_tickets = lista_tickets.filter(Ticket.estado == estado)
     return lista_tickets
 
 def aplicar_filtro(filtros,lista_tickets):

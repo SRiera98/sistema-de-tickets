@@ -6,8 +6,6 @@ from zipfile import ZipFile
 import os
 from werkzeug.utils import secure_filename # Modifica el nombre del archivo a uno seguro
 from multiprocessing import Process
-from modelo import Ticket
-from run_DB import session
 from validaciones import validar_ticket, validar_numero, validar_ip, validar_fecha, validar_estado
 import re
 
@@ -118,12 +116,12 @@ def validar_comando(cadena):
             if len(filter_dict) == 0 and opcion in ('--listar', '-l'):
                 retorno = ('LISTAR', True)
             elif len(filter_dict) == 0 and opcion in ('--exportar', '-x'):
-                retorno= ('EXPORTAR',True)
+                retorno = ('EXPORTAR',True)
 
             if len(filter_dict)>0 and opt.count(('--listar','')) == 1 or opt.count(('-l','')) == 1:
                 retorno = ('FILTRAR', filter_dict)
             elif len(filter_dict)>0 and opt.count(('--exportar','')) == 1 or opt.count(('-x','')) == 1:
-                retorno=('EXPORTAR',filter_dict)
+                retorno = ('EXPORTAR',filter_dict)
 
     except getopt.GetoptError as e:
         print("Error en el comando ingresado, por favor, revise su sintaxis e ingreselo nuevamente.")
