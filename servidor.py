@@ -5,10 +5,9 @@ import sys
 import threading
 from multiprocessing import Lock
 from threading import Thread
-from funciones_generales import control_ejecucion_servidor
+from funciones_generales import control_ejecucion_servidor,logger
 from funciones_servidor import almacenar_ticket, solicitar_tickets, configurar_servidor, \
     exportar_tickets_servidor,editar_tickets_servidor
-from validaciones import logger
 
 
 def thread_fuction(port, sock, lock):
@@ -43,6 +42,7 @@ def thread_fuction(port, sock, lock):
                 continue
 
         elif (msg.decode() == "SALIR"):
+            sock.close()
             break
 
         else:

@@ -109,7 +109,6 @@ def exportar_tickets_servidor(sock):
     if test is not True:  # En caso de que sea un filtro.
         lista_tickets = session.query(Ticket).filter()
         lista_tickets = aplicar_filtro(test, lista_tickets)
-
     total_paginas = math.ceil(len(lista_tickets.all()) / 10)  # dividimos el total de tickets por la cantidad de paginas
     ticket_dict = dict()
     sock.send(str(total_paginas).encode('ascii'))

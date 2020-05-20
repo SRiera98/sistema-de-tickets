@@ -44,6 +44,7 @@ def consultar_tickets(client_socket,opcion,test):
     num_pagina = -1
     while control == "-s":
         num_pagina += 1
+        time.sleep(0.02)
         tickets = client_socket.recv(2000).decode('ascii')
         dict_tickets = json.loads(tickets)
         if len(dict_tickets) == 0 and total_paginas == 0:
@@ -93,7 +94,7 @@ def exportar_tickets_cliente(client_socket,test):
     :param test: Diccionario con filtro o True.
     :return: Nada
     """
-    time.sleep(0.05)
+    time.sleep(0.02)
     client_socket.send(json.dumps(test).encode('ascii'))  # Mandamos datos de filtro o  Boolean lista compelta
     if control_filtro(test):
         return False
@@ -102,16 +103,21 @@ def exportar_tickets_cliente(client_socket,test):
     lista_tickets = list()
     while True:
         num_pagina += 1
-        datos = client_socket.recv(2000).decode('ascii')
-        tickets = json.loads(datos)
+        try: # Debido a que puede pasar que no se reciba el JSON completo de una vez.
+            datos = client_socket.recv(2000).decode('ascii')
+            tickets = json.loads(datos)
+        except json.JSONDecodeError:
+            datos = f"{datos}{client_socket.recv(2000).decode('ascii')}"
+            tickets = json.loads(datos)
         if len(tickets) == 0 and total_paginas == 0:
             print("¡No hay resultados para esa búsqueda!")
             break
         for k, v in tickets.items():
             lista_tickets.append(Ticket(ticketId=v["ticketId"], fecha=v["fecha"], titulo=v["titulo"], autor=v["autor"],
-                                        descripcion=v["descripcion"], estado=v["estado"]))
+                                 descripcion=v["descripcion"], estado=v["estado"]))
         if num_pagina == total_paginas:
             break
+        datos=None
     if len(lista_tickets) > 0:
         procesamiento_csv(lista_tickets)
         mensaje_exito = client_socket.recv(36).decode()

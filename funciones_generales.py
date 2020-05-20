@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 from zipfile import ZipFile
 import os
+from os import system
 from werkzeug.utils import secure_filename # Modifica el nombre del archivo a uno seguro
 from multiprocessing import Process
 from validaciones import validar_ticket, validar_numero, validar_ip, validar_fecha, validar_estado
@@ -45,6 +46,26 @@ def procesamiento_csv(tickets):
     """
     proceso=Process(target=csv_manager,args=(tickets,))
     proceso.start()
+
+def logger(sock, msg):
+    """
+    Este metodo se encarga de abrir el archivo de log para guardar la opcion ingresada por el usuario.
+    :param sock: socket de un cliente conectado.
+    :param msg: opcion ingresada por el cliente.
+    :return: Nada.
+    """
+    if msg.decode() in ("INSERTAR", "LISTAR", "FILTRAR", "EDITAR", "LIMPIAR", "EXPORTAR", "SALIR"):
+        with open("log", "a+") as file:
+            ip, port = sock.getpeername()
+            fecha = datetime.now().strftime("%d-%m-%Y %H h:%M min:%S seg")
+            file.write(f"Dirección IP Cliente: {ip} - Fecha: {fecha} - Operacion ejecutada: {msg.decode()},\n")
+
+
+def clear_screen():
+    """
+    Limpia la pantalla usando el comando de Sistema "clear"
+    """
+    system('clear')
 
 def parsear_comando(cadena):
     """

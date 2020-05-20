@@ -3,8 +3,7 @@ import socket
 import sys
 from funciones_cliente import ingresar_ticket, consultar_tickets, configurar_cliente, editar_ticket_cliente, \
     exportar_tickets_cliente
-from funciones_generales import validar_comando, controlar_ejecucion_cliente
-from validaciones import clear_screen
+from funciones_generales import validar_comando, controlar_ejecucion_cliente,clear_screen
 
 if __name__ == "__main__":
     # Obtenemos host y puerto de lo pasado en GetOpt

@@ -1,11 +1,26 @@
 ticketId,fecha,titulo,autor,descripcion,estado
-220,2020-05-18 11:03:40,Notebook,Marcos,falla flex,resuelto
-221,2020-05-18 11:03:59,PC nueva,Diego,falla disco,pendiente
-222,2020-05-18 11:04:24,Auriculares,Gonzalo,se escucha de un lado,en procesamiento
-223,2020-05-18 11:14:50,falla red,Jefe,anda mal wi-fi,pendiente
-224,2020-05-18 11:33:31,falla pc,Pablo,aowdaowd awd,resuelto
-225,2020-05-18 12:26:58,TV,ROdrigo,falla control remoto,pendiente
-226,2020-05-18 12:35:12,falal awldawl,aowdal lawdl,qwoqeo laladssss,resuelto
-227,2020-05-18 12:50:21,PC,Pedro,falla ethernet,pendiente
-228,2020-05-18 16:51:38,PC,fabricio,falla disco,en procesamiento
-229,2020-05-18 17:09:03,ddd,aaa,eleel,pendiente
+1,2020-04-05 17:30:49,Fork bomb,Jose,descripcion probando neiegoa,resuelto
+8,2020-04-09 19:20:20,Celular roto,Jose,pantalla rota,en procesamiento
+9,2020-04-09 19:24:50,cel roto,Jose,pantalla rota,en procesamiento
+32,2020-04-12 17:24:50,dañado pc,Jose,arreglar pendrive,pendiente
+37,2020-04-12 18:18:10,arreglar servidor,Jose,contratar mas cpu AWS,pendiente
+39,2020-04-12 18:25:46,Falla PC,Jose,falla por que no anda disco,pendiente
+40,2020-04-12 18:33:26,PC alv,Jose,malabrasoowaw,pendiente
+61,2020-05-07 20:35:20,Pendrive roto,Jose,comprar otro,pendiente
+62,2020-05-10 11:40:42,Disco falla,Jose,oawdwoado,en procesamiento
+72,2020-05-10 12:29:19,mouse pad,Jose,falla random,pendiente
+75,2020-05-10 19:56:15,falla notebook,Jose,tecla esc falla,en procesamiento
+77,2020-05-10 20:06:47,falla pc,Jose,ram rota,resuelto
+81,2020-05-10 20:26:25,falla mouse,jose,comprar otro,pendiente
+98,2020-05-10 21:16:20,tiado pc rota,Jose,awodwadl awe,resuelto
+99,2020-05-10 21:18:08,pc rota,JOse,falla disco,pendiente
+101,2020-05-10 21:21:27,,Jose,pofalla,pendiente
+124,2020-05-13 18:55:19,PC rota,Jose,falla,en procesamiento
+128,2020-05-13 19:21:04,PC DAAAÑAWD,JOse,falloawdl,en procesamiento
+130,2020-05-13 20:03:18,falla pc,Jose,disco no toma,pendiente
+133,2020-05-13 20:09:44,falla,JOse,pepepe,resuelto
+151,2020-05-14 09:30:22,oawdl titple,Jose,falla servidor no se por que,en procesamiento
+159,2020-05-14 10:32:53,fwlao,Jose,awo lawdoawdlawdo lawdo,pendiente
+166,2020-05-14 11:37:03,falla pc,Jose,teclado roto,en procesamiento
+173,2020-05-15 09:37:49,PC falla,Jose,falla disco mal,pendiente
+219,2020-05-17 19:45:58,UPS,Jose,"reemplazar, se daño",resuelto
